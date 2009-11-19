@@ -1,0 +1,14 @@
+syntax: glob
+
+.DS_Store
+Thumbs.db
+
+export
+applet
+application.macosx
+application.windows
+application.linux
+
+*.tga
+*.mov
+
