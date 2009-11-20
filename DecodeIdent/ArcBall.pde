@@ -113,7 +113,8 @@ class ArcBall {
   public void mousePressed() {
     isPressed=true;
     downPos = mapPointOnSphere(new Vec2D(app.mouseX, app.mouseY));
-    downOrientation.set(targetOrientation).identity();
+    downOrientation.set(targetOrientation);
+    dragOrientation.identity();
   }
 
   public void mouseReleased() {

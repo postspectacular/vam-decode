@@ -19,15 +19,15 @@
  
 int MAX_CAM_PRESETS = 9;
 
-ControlP5 ui;
-Textfield uiMessage;
+public ControlP5 ui;
+public Textfield uiMessage;
 
-Textlabel uiLabelNumTiles;
-Textlabel uiLabelTimecode;
-Bang uiExportToggle;
-Radio uiSavePresetRadio,uiLoadPresetRadio;
+public Textlabel uiLabelNumTiles;
+public Textlabel uiLabelTimecode;
+public Bang uiExportToggle;
+public Radio uiSavePresetRadio,uiLoadPresetRadio;
 
-GuiLayerConfig[] guiLayers;
+public GuiLayerConfig[] guiLayers;
 
 String selectedTabName="default";
 
@@ -253,13 +253,13 @@ void initGUI() {
   }
 }
 
-void controlEvent(ControlEvent e) {
+public void controlEvent(ControlEvent e) {
   if (e.isTab()) {
     selectedTabName = e.tab().getTab().name();
   }
 }
 
-void updateUIColors() {
+public void updateUIColors() {
   if (bgColor.brightness()>0.5) {
     ui.setColorActive(0xff333333);
     ui.setColorBackground(0xff666666);
@@ -276,22 +276,22 @@ void updateUIColors() {
   }
 }
 
-void setSeedMessage(String txt) {
+public void setSeedMessage(String txt) {
   seed.setMessage(txt);
   initVolume(seed);
   initMeshes();
   doUpdate=true;
 }
 
-void setCamDistance(float zoom) {
+public void setCamDistance(float zoom) {
   cam.targetZoom=zoom;
 }
 
-void setZoomSmooth(float s) {
+public void setZoomSmooth(float s) {
   cam.zoomSmooth=s;
 }
 
-void setNumExportTiles(int num) {
+public void setNumExportTiles(int num) {
   numExportTiles = num;
   tiler = new Tiler(pgl, numExportTiles);
   int totalWidth = num * width;
@@ -301,13 +301,13 @@ void setNumExportTiles(int num) {
   uiLabelNumTiles.setValue(totalWidth + " x " + totalHeight + " (" + px + " x " + py + " mm @ 300 dpi)");
 }
 
-void saveTiles() {
+public void saveTiles() {
   tiler.initTiles(cam.fov, cam.near, cam.far);
   tiler.save(sketchPath("export"), "odz-xl-"
     + (System.currentTimeMillis() / 1000), "tga");
 }
 
-void toggleExport() {
+public void toggleExport() {
   if (exporter.isExporting()) {
     exporter.stop();
     uiExportToggle.setLabel("start recording");
@@ -324,18 +324,18 @@ void toggleExport() {
   }
 }
 
-void toggleCamAutoRotation() {
+public void toggleCamAutoRotation() {
   cam.toggleModulation();
 }
 
-void rebuildMeshes() {
+public void rebuildMeshes() {
   for(Iterator i=meshes.iterator(); i.hasNext();) {
     DecodeMesh mesh=(DecodeMesh)i.next();
     mesh.restart();
   }
 }
 
-void setMeshComparator(int id) {
+public void setMeshComparator(int id) {
   switch(id) {
   case 0:
     meshComparator=new FaceDistanceComparator(new Vec3D(),meshFuzziness);
@@ -349,68 +349,68 @@ void setMeshComparator(int id) {
   }
 }
 
-void setBGRed(float r) {
+public void setBGRed(float r) {
   bgColor.setRed(r);
   updateUIColors();
 }
 
-void setBGGreen(float g) {
+public void setBGGreen(float g) {
   bgColor.setGreen(g);
   updateUIColors();
 }
 
-void setBGBlue(float b) {
+public void setBGBlue(float b) {
   bgColor.setBlue(b);
   updateUIColors();
 }
 
-void setRefractRed(float r) {
+public void setRefractRed(float r) {
   shader.begin();
   shader.setParameter("etaR",r);
   shader.end();
 }
 
-void setRefractGreen(float g) {
+public void setRefractGreen(float g) {
   shader.begin();
   shader.setParameter("etaG",g);
   shader.end();
 }
 
-void setRefractBlue(float b) {
+public void setRefractBlue(float b) {
   shader.begin();
   shader.setParameter("etaB",b);
   shader.end();
 }
 
-void setFresnel(float p) {
+public void setFresnel(float p) {
   shader.begin();
   shader.setParameter("fresnelPower",p);
   shader.end();
 }
 
-void setCamPosX(float x) {
+public void setCamPosX(float x) {
   cam.targetPos.x=x;
 }
 
-void setCamPosY(float y) {
+public void setCamPosY(float y) {
   cam.targetPos.y=y;
 }
 
-void setCamPosZ(float z) {
+public void setCamPosZ(float z) {
   cam.targetPos.z=z;
 }
 
-void setCamPosSpeed(float s) {
+public void setCamPosSpeed(float s) {
   cam.panSmooth=s;
 }
 
-void randomizeColors() {
+public void randomizeColors() {
   for(int i=0; i<meshColors.length; i++) {
     meshColors[i]=TColor.newRandom();
   }
 }
 
-void toggleNormals() {
+public void toggleNormals() {
   doUpdateNormals=!doUpdateNormals;
   if (!doUpdateNormals) {
     for(Iterator i=meshes.iterator(); i.hasNext();) {
@@ -420,12 +420,12 @@ void toggleNormals() {
   }
 }
 
-void setCameraPreset(int id) {
+public void setCameraPreset(int id) {
   cam.isCamModEnabled=false;
   ((CameraPreset)cameraPresets.get(id)).activate();
 }
 
-void saveCameraPreset(int id) {
+public void saveCameraPreset(int id) {
   if(id==-1) {
     uiSavePresetRadio.removeItem("add as preset");
     if (cameraPresets.size()<MAX_CAM_PRESETS) {
@@ -442,10 +442,10 @@ void saveCameraPreset(int id) {
   }
 }
 
-void setArcballSpeed(float s) {
+public void setArcballSpeed(float s) {
   arcBall.speed=s;
 }
 
-void resetArcBall() {
+public void resetArcBall() {
   arcBall.reset();
 }

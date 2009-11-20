@@ -124,7 +124,7 @@ class DecodeMesh {
         glVerts[j+10]=f.c.z;
       }
       glModel.updateVertices(glVerts);
-      if (doUpdateNormals) {
+      if (doUpdateNormals && doUpdate) {
         Vec3D n=new Vec3D();
         for(int i=0,j=0; i<currFaceCount; i++,j+=12) {
           DecodeFace f=faces[i];

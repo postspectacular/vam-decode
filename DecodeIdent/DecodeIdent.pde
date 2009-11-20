@@ -38,34 +38,34 @@ import controlP5.*;
 import codeanticode.glgraphics.*;
 
 TypedProperties config;
-SeedConfiguration seed;
+public SeedConfiguration seed;
 
 int WIDTH=960;
 int HEIGHT=540;
 public TColor bgColor;
-TColor[] meshColors;
+public TColor[] meshColors;
 
-PApplet app;
-PGraphicsOpenGL pgl;
-GL gl;
-GLSLShader shader;
+public PApplet app;
+public PGraphicsOpenGL pgl;
+public GL gl;
+public GLSLShader shader;
 
-PImage bgGradient;
-PGraphics seedImg;
+public PImage bgGradient;
+public PGraphics seedImg;
 
-VolumetricSpace volume;
-IsoSurface surface;
-VolumetricBrush brush;
-ArrayList meshes;
+public VolumetricSpace volume;
+public IsoSurface surface;
+public VolumetricBrush brush;
+public ArrayList meshes;
 
-IsoLayerConfig[] layers;
+public IsoLayerConfig[] layers;
 
-Tiler tiler;
-FrameSequenceExporter exporter;
+public Tiler tiler;
+public FrameSequenceExporter exporter;
 
-CameraState cam;
-ArrayList cameraPresets;
-ArcBall arcBall;
+public CameraState cam;
+public ArrayList cameraPresets;
+public ArcBall arcBall;
 
 public boolean doUpdate=true;
 public boolean doUseLights=true;
@@ -299,32 +299,5 @@ void initCameraPresets() {
     cameraPresets.add(new CameraPreset(orient,pos,config.getFloat(prop+"zoom",1)));
   }
 }
-
-public void stop() {
-  super.stop();
-  GLContext c=pgl.getContext();
-  try {
-    while (true) {
-      try {
-        if(c.makeCurrent() != GLContext.CONTEXT_NOT_CURRENT) {
-          break;
-        }
-      } 
-      catch(javax.media.opengl.GLException e) {
-      }
-      println("GL context not yet current...");
-      Thread.sleep(10);
-    }
-  } 
-  catch (InterruptedException e) {
-    e.printStackTrace();
-  }
-  synchronized(c) {
-    c.release();
-    c.destroy();
-  }
-  println("context destroyed, applet stopped...");
-}
-
 
 
