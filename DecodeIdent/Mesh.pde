@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 class DecodeMesh {
   DecodeFace[] faces;
   DecodeVertex[] vertices;
@@ -71,19 +71,19 @@ class DecodeMesh {
   void resetNormals() {
     for(int i=0,j=0; i<faces.length; i++,j+=12) {
       DecodeFace f=faces[i];
-      glNormals[j]=f.va.v.normal.x;
-      glNormals[j+1]=f.va.v.normal.y;
-      glNormals[j+2]=f.va.v.normal.z;
-      glNormals[j+4]=f.vb.v.normal.x;
-      glNormals[j+5]=f.vb.v.normal.y;
-      glNormals[j+6]=f.vb.v.normal.z;
-      glNormals[j+8]=f.vc.v.normal.x;
-      glNormals[j+9]=f.vc.v.normal.y;
-      glNormals[j+10]=f.vc.v.normal.z;
+      glNormals[j]=-f.va.v.normal.x;
+      glNormals[j+1]=-f.va.v.normal.y;
+      glNormals[j+2]=-f.va.v.normal.z;
+      glNormals[j+4]=-f.vb.v.normal.x;
+      glNormals[j+5]=-f.vb.v.normal.y;
+      glNormals[j+6]=-f.vb.v.normal.z;
+      glNormals[j+8]=-f.vc.v.normal.x;
+      glNormals[j+9]=-f.vc.v.normal.y;
+      glNormals[j+10]=-f.vc.v.normal.z;
     }
     glModel.updateNormals(glNormals);
   }
-  
+
   void update() {
     if (layerConfig.isEnabled) {
       currFaceCount=min(currFaceCount+(int)(random(0.1,1)*meshBuildSpeed),faces.length);
@@ -129,18 +129,17 @@ class DecodeMesh {
         for(int i=0,j=0; i<currFaceCount; i++,j+=12) {
           DecodeFace f=faces[i];
           if (shader.isSupportedVS) {
-            n.set(f.a.sub(f.c).crossSelf(f.a.sub(f.b))).normalize();
-          } else {
-            n.set(f.c.sub(f.a).crossSelf(f.b.sub(f.a))).normalize();
+            n.set(f.a.sub(f.b).crossSelf(f.a.sub(f.c))).normalize();
+          } 
+          else {
+            n.set(f.a.sub(f.c).crossSelf(f.a.sub(f.b))).normalize(); 
           }
           glNormals[j]=n.x;
           glNormals[j+1]=n.y;
           glNormals[j+2]=n.z;
-          //n.set(f.b).normalize();
           glNormals[j+4]=n.x;
           glNormals[j+5]=n.y;
           glNormals[j+6]=n.z;
-          //n.set(f.c).normalize();
           glNormals[j+8]=n.x;
           glNormals[j+9]=n.y;
           glNormals[j+10]=n.z;
@@ -219,8 +218,4 @@ class DecodeFace {
     updateVertices();
   }
 }
-
-
-
-
 

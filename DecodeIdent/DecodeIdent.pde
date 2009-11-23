@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 import processing.opengl.*;
 
 import java.nio.*;
@@ -192,10 +192,12 @@ void showInfo() {
     int y=height-numLines*leading;
     for(int i=0; i<numLines; i++) {
       String l=config.getProperty("app.info"+i,"");
-      fill(0,128);
-      rect(0,y-leading,textWidth(l)+x+10,leading);
-      fill(255);
-      text(l,x,y-4);
+      if (l.length()>0) {
+        fill(0,128);
+        rect(0,y-leading,textWidth(l)+x+10,leading);
+        fill(255);
+        text(l,x,y-4);
+      }
       y+=leading;
     }
   }
@@ -299,5 +301,4 @@ void initCameraPresets() {
     cameraPresets.add(new CameraPreset(orient,pos,config.getFloat(prop+"zoom",1)));
   }
 }
-
 
