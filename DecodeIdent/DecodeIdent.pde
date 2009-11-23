@@ -25,7 +25,6 @@ import javax.media.opengl.glu.*;
 import com.sun.opengl.util.*;
 
 import toxi.color.*;
-import toxi.color.theory.*;
 import toxi.volume.*;
 import toxi.util.datatypes.*;
 import toxi.math.*;
@@ -37,36 +36,48 @@ import toxi.geom.util.*;
 import controlP5.*;
 import codeanticode.glgraphics.*;
 
+// type & variable declarations
+
 TypedProperties config;
 public SeedConfiguration seed;
 
+// window settings
 int WIDTH=960;
 int HEIGHT=540;
 public TColor bgColor;
-public TColor[] meshColors;
 
 public PApplet app;
 public PGraphicsOpenGL pgl;
 public GL gl;
 public GLSLShader shader;
 
+// images for background gradient & wordmark
 public PImage bgGradient;
 public PGraphics seedImg;
 
+// volumetric types
 public VolumetricSpace volume;
 public IsoSurface surface;
 public VolumetricBrush brush;
-public ArrayList meshes;
 
+// mesh containers & colours
+public ArrayList meshes;
+public TColor[] meshColors;
+public Vec3D explodeCursor=new Vec3D();
+
+// contour layer definitions
 public IsoLayerConfig[] layers;
 
+// bitmap exporters
 public Tiler tiler;
 public FrameSequenceExporter exporter;
 
+// view settings
 public CameraState cam;
 public ArrayList cameraPresets;
 public ArcBall arcBall;
 
+// application & interface switches
 public boolean doUpdate=true;
 public boolean doUseLights=true;
 public boolean doUseGlobalCursor=false;
@@ -76,13 +87,15 @@ public boolean doShowGradient=true;
 public boolean isShiftDown=false;
 public boolean isControlDown = false;
 
+// default values
 public int numExportTiles=3;
 public int meshBuildSpeed=33;
 public float meshFuzziness=0.1;
 public float bgGradientAlpha=1;
-
-public Vec3D explodeCursor=new Vec3D();
 public Comparator meshComparator=new FaceDistanceComparator(new Vec3D(),meshFuzziness);
+
+// initialization method
+// loads config file, creates window and initializes all app components
 
 void setup() {
   if (config==null) {
@@ -106,23 +119,35 @@ void setup() {
   bgGradient=loadImage("tex/circ_grad_1024_2.png");
 }
 
+// application main loop
+// handles all mesh updates & rendering tasks
+
 void draw() {
+  // check if tile exporter is currently active
+  // and only updates view & meshes if it's not
   if (!tiler.isTiling()) {
     cam.update();
     updateLayers();
     updateMeshes();
   }
+  // apply field of view
   cam.setPerspective();
   background(bgColor.toARGB());
+  // move into 3D coordinate system
   pushMatrix();
   translate(width/2,height/2,0);
+  // apply arc ball view orientation & current camera settings
   arcBall.apply();
   cam.apply();
+  // if active, prepare tile exporter
   tiler.pre();
+  // check if we need to draw background gradient
   if (doShowGradient) {
     drawBackground();
   }
-  pgl.beginGL(); 
+  // switch into OpenGL mode
+  pgl.beginGL();
+  // apply lights
   if (doUseLights) {
     if (!shader.isSupportedVS) {
       lights();
@@ -132,23 +157,32 @@ void draw() {
       initLights();
     }
   }
+  // render all enabled meshes
+  // (meshes check themselves if they're active)
   for(Iterator i=meshes.iterator(); i.hasNext();) {
     DecodeMesh mesh=(DecodeMesh)i.next();
     mesh.render();
   }
   pgl.endGL();
+  // if tile exporter is active, post-process current frame
   tiler.post();
+  // if image sequence exporter is active, export current frame
+  // and show current time stamp in the "export" UI tab
   if (exporter.isExporting()) {
     exporter.update();
     uiLabelTimecode.setValue("recording: "+exporter.getTimeCode());
   }
+  // revert into 2D coordinate system
   popMatrix();
   noLights();
   gl.glDisable(GL.GL_LIGHTING);
   imageMode(CORNER);
   hint(DISABLE_DEPTH_TEST);
+  // display usage information
   showInfo();
 }
+
+// draw background gradient
 
 void drawBackground() {
   hint(DISABLE_DEPTH_TEST);
@@ -159,19 +193,27 @@ void drawBackground() {
   hint(ENABLE_DEPTH_TEST);
 }
 
+// update all layer configurations
+
 void updateLayers() {
   for(int i=0; i<layers.length; i++) {
     layers[i].update();
   }
 }
 
+// update all meshes based on current layer configs
+
 void updateMeshes() {
+  // vertex extrusion is only applied to the outermost layer
+  // i.e. the one with the lowest contour/iso value
   DecodeMesh m=(DecodeMesh)meshes.get(0);
   m.displace();
+  // if right mouse button is presses, update position of explosion focal point
   if(mousePressed && mouseButton==RIGHT) {
     doUseGlobalCursor=true;
     explodeCursor.interpolateToSelf(new Vec3D(-(width/2-mouseX)*1.5,-(height/2-mouseY)*1.5,0),0.25);
   }
+  // update mesh triangle explosions based on current focal point(s)
   if(doUpdate) {
     for(Iterator i=meshes.iterator(); i.hasNext();) {
       DecodeMesh mesh=(DecodeMesh)i.next();
@@ -180,6 +222,9 @@ void updateMeshes() {
     }
   }
 }
+
+// if the "present" UI tab is currently active,
+// display usage info taken from config file
 
 void showInfo() {
   if (selectedTabName.equalsIgnoreCase("default")) {
@@ -203,10 +248,27 @@ void showInfo() {
   }
 }
 
+// load the configuration file
+// depending on the runtime context of the application
+// the path to this file is either assumed to be in the
+// config subfolder (offline) or defined via the "decode.config"
+// applet parameter when running in the browser.
+//
+// This method creates an instance of the configuration used
+// throughout other parts of the application, but for now only captures
+// the window dimensions and default background colour.
+//
+// If the config file can't be loaded, the application immediately exits.
+//
+// For a description of the various other configuration parameters
+// please consult the user guid on the project wiki:
+// http://code.google.com/p/decode/wiki/UserGuideConfig
+
 void initConfig() {
   InputStream stream;
+  // TypedProperties is a utility class from the toxiclibs package
+  // and provides easy access to working with external properties
   config=new TypedProperties();
-  println("online: "+online);
   if (online) {
     try {
       stream=new URL(getParameter("decode.config")).openStream();
@@ -223,14 +285,12 @@ void initConfig() {
     if (online) {
       WIDTH=Integer.parseInt(getParameter("width"));
       HEIGHT=Integer.parseInt(getParameter("height"));
-      println(WIDTH+"x"+HEIGHT);
     } 
     else {
       WIDTH=config.getInt("app.width",WIDTH);
       HEIGHT=config.getInt("app.height",HEIGHT);
     }
     bgColor=TColor.newHex(config.getProperty("app.bgcolor","000000"));
-    println(WIDTH+"x"+HEIGHT);
   }
   catch(IOException e) {
     println("couldn't load config");
@@ -242,6 +302,8 @@ void initConfig() {
   }
 }
 
+// Initializes the default wordmark & font settings
+
 void initSeed() {
   String msg=config.getProperty("volume.seed.message","decode");
   PFont seedFont=loadFont("fonts/"+config.getProperty("volume.seed.font","VATheSansPlain-48.vlw"));
@@ -249,6 +311,9 @@ void initSeed() {
   int baseLine=config.getInt("volume.seed.font.baseline",50);
   seed=new SeedConfiguration(msg,seedFont,seedFontSize,baseLine);
 }
+
+// Extracts & initializes all contour layer definitions
+// from the config file
 
 void initLayers() {
   int numLayers=config.getInt("volume.layer.count",1);
@@ -259,15 +324,25 @@ void initLayers() {
   }
 }
 
+// initializes camera/view objects
+
 void initCamera() {
   cam=new CameraState();
   arcBall=new ArcBall(this);
 }
 
+// initializes the bitmap exporters
+
 void initExporters() {
   exporter=new FrameSequenceExporter("export","decode","tga");
   tiler=new Tiler(pgl,5);
 }
+
+// attempts to load & initialize the GLSL
+// vertex & pixel shaders and their default settings
+// see the user guide for more information about the
+// shaders used:
+// http://code.google.com/p/decode/wiki/DevGuideShader
 
 void initShaders() {
   shader=new GLSLShader(pgl.gl);
@@ -281,6 +356,11 @@ void initShaders() {
   setRefractBlue(config.getFloat("shader.etaB",0.69));
 }
 
+// in case the graphics card doesn't support shaders
+// the meshes will be tinted in plain colours
+// default colours are defined in the config file, but
+// can be randomized via the user interface
+
 void initColors() {
   int numCol=config.getInt("mesh.color.count",5);
   meshColors=new TColor[numCol];
@@ -288,6 +368,9 @@ void initColors() {
     meshColors[i]=TColor.newHex(config.getProperty("mesh.color"+i,"ffffff"));
   }
 }
+
+// load pre-defined camera presets from config file
+// and store them in CameraPreset objects (defined in the Camera.pde)
 
 void initCameraPresets() {
   int numPresets=config.getInt("cam.preset.count",0);
@@ -301,4 +384,3 @@ void initCameraPresets() {
     cameraPresets.add(new CameraPreset(orient,pos,config.getFloat(prop+"zoom",1)));
   }
 }
-
