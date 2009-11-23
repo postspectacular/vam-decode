@@ -63,7 +63,7 @@ public VolumetricBrush brush;
 // mesh containers & colours
 public ArrayList meshes;
 public TColor[] meshColors;
-public Vec3D explodeCursor=new Vec3D();
+public SpringyPoint explodeCursor=new SpringyPoint(0,0,0,0.85,0.1);
 
 // contour layer definitions
 public IsoLayerConfig[] layers;
@@ -211,7 +211,7 @@ void updateMeshes() {
   // if right mouse button is presses, update position of explosion focal point
   if(mousePressed && mouseButton==RIGHT) {
     doUseGlobalCursor=true;
-    explodeCursor.interpolateToSelf(new Vec3D(-(width/2-mouseX)*1.5,-(height/2-mouseY)*1.5,0),0.25);
+    explodeCursor.update(new Vec3D(-(width/2-mouseX)*1.5,-(height/2-mouseY)*1.5,0));
   }
   // update mesh triangle explosions based on current focal point(s)
   if(doUpdate) {
