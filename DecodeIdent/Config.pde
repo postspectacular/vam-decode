@@ -114,19 +114,3 @@ class ExtrudeFocus {
   }
 }
 
-
-class SpringyPoint extends Vec3D {
-  Vec3D velocity=new Vec3D();
-  float damping,smoothing;
-  
-  SpringyPoint(float x, float y, float z, float d, float s) {
-    super(x,y,z);
-    damping=d;
-    smoothing=s;
-  }
-  
-  void update(Vec3D target) {
-    velocity.set(velocity.scale(damping).addSelf(target.sub(this).scaleSelf(smoothing)));
-    this.addSelf(velocity);
-  }
-}

@@ -420,7 +420,6 @@ public void randomizeColors() {
 
 public void toggleNormals() {
   doUpdateNormals=!doUpdateNormals;
-  doUpdateOnce=true;
   if (!doUpdateNormals) {
     for(Iterator i=meshes.iterator(); i.hasNext();) {
       DecodeMesh mesh=(DecodeMesh)i.next();

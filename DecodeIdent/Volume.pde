@@ -17,6 +17,21 @@
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
  
+PImage createVolumeSeedImage(SeedConfiguration seed) {
+  int w=config.getInt("volume.seed.img.width",192);
+  int h=config.getInt("volume.seed.img.height",64);
+  seedImg=createGraphics(w,h,JAVA2D);
+  seedImg.beginDraw();
+  seedImg.background(255);
+  seedImg.fill(0);
+  seedImg.textFont(seed.font,seed.fontSize);
+  seedImg.textAlign(CENTER);
+  seedImg.text(seed.message,w/2,seed.baseLine);
+  seedImg.endDraw();
+  seedImg.loadPixels();
+  return seedImg;
+}
+
 void initVolume(SeedConfiguration seed) {
   PImage seedImg=createVolumeSeedImage(seed);
   int resX=config.getInt("volume.resolution.x",80);
@@ -41,34 +56,5 @@ void initVolume(SeedConfiguration seed) {
     }
   }
   volume.closeSides();
-}
-
-void initMeshes() {
-  if (meshes!=null) {
-    for(Iterator i=meshes.iterator(); i.hasNext();) {
-      ((DecodeMesh)i.next()).cleanup();
-    }
-  }
-  meshes=new ArrayList();
-  for(int i=0; i<layers.length; i++) {
-    IsoLayerConfig lc=layers[i];
-    DecodeMesh dm=new DecodeMesh(surface,lc);
-    meshes.add(dm);
-  }
-}
-
-PImage createVolumeSeedImage(SeedConfiguration seed) {
-  int w=config.getInt("volume.seed.img.width",192);
-  int h=config.getInt("volume.seed.img.height",64);
-  seedImg=createGraphics(w,h,JAVA2D);
-  seedImg.beginDraw();
-  seedImg.background(255);
-  seedImg.fill(0);
-  seedImg.textFont(seed.font,seed.fontSize);
-  seedImg.textAlign(CENTER);
-  seedImg.text(seed.message,w/2,seed.baseLine);
-  seedImg.endDraw();
-  seedImg.loadPixels();
-  return seedImg;
 }
 

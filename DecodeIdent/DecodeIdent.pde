@@ -34,7 +34,7 @@ import toxi.geom.*;
 import toxi.geom.util.*;
 
 import controlP5.*;
-import codeanticode.glgraphics.*;
+//import codeanticode.glgraphics.*;
 
 // type & variable declarations
 
@@ -63,7 +63,7 @@ public VolumetricBrush brush;
 // mesh containers & colours
 public ArrayList meshes;
 public TColor[] meshColors;
-public SpringyPoint explodeCursor=new SpringyPoint(0,0,0,0.85,0.1);
+public SpringyPoint explodeCursor=new SpringyPoint(0,0,0,0.83,0.1);
 
 // contour layer definitions
 public IsoLayerConfig[] layers;
@@ -79,7 +79,6 @@ public ArcBall arcBall;
 
 // application & interface switches
 public boolean doUpdate=true;
-public boolean doUpdateOnce;
 public boolean doUseLights=true;
 public boolean doUseGlobalCursor=false;
 public boolean doUpdateNormals=true;
@@ -219,12 +218,11 @@ void updateMeshes() {
     explodeCursor.update(new Vec3D(-(width/2-mouseX)*1.5,-(height/2-mouseY)*1.5,0));
   }
   // update mesh triangle explosions based on current focal point(s)
-  if(doUpdate || doUpdateOnce) {
+  if(doUpdate) {
     for(Iterator i=meshes.iterator(); i.hasNext();) {
       DecodeMesh mesh=(DecodeMesh)i.next();
       mesh.update();
       mesh.explode(doUseGlobalCursor ? explodeCursor : m.layerConfig.explodeCursor);
-      doUpdateOnce=false;
     }
   }
 }
@@ -328,6 +326,23 @@ void initLayers() {
   for(int i=0; i<numLayers; i++) {
     layers[i]=new IsoLayerConfig(i);
     println(layers[i]);
+  }
+}
+
+// initializes the actual polygon meshes from the
+// volumetric version of the wordmark
+
+void initMeshes() {
+  if (meshes!=null) {
+    for(Iterator i=meshes.iterator(); i.hasNext();) {
+      ((DecodeMesh)i.next()).cleanup();
+    }
+  }
+  meshes=new ArrayList();
+  for(int i=0; i<layers.length; i++) {
+    IsoLayerConfig lc=layers[i];
+    DecodeMesh dm=new DecodeMesh(surface,lc);
+    meshes.add(dm);
   }
 }
 

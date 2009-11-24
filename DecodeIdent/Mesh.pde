@@ -22,8 +22,8 @@ class DecodeMesh {
   DecodeVertex[] vertices;
   IsoLayerConfig layerConfig;
   IsoSurface surface;
-  GLModel glModel;
-  float[] glVerts, glNormals;
+  VBO vbo;
+  float[] vboVertices, vboNormals;
 
   int currFaceCount;
 
@@ -51,19 +51,18 @@ class DecodeMesh {
       TriangleMesh.Face f=(TriangleMesh.Face)i.next();
       faces[idx++]=new DecodeFace(vertices[f.a.id],vertices[f.b.id],vertices[f.c.id]);
     }
-    glModel=new GLModel(app, faces.length*3, GLModel.TRIANGLES, GLModel.DYNAMIC);
-    glModel.initNormals();
+    vbo=new VBO(faces.length*3);
     // 3 vertices per face (alignment of 4 bytes)
-    glVerts=new float[faces.length*12];
-    glNormals=new float[glVerts.length];
+    vboVertices=new float[faces.length*12];
+    vboNormals=new float[vboVertices.length];
     restart();
   }
 
   void restart() {
     Arrays.sort(faces,meshComparator);
     resetNormals();
-    for(int i=0; i<glVerts.length; i++) {
-      glVerts[i]=0;
+    for(int i=0; i<vboVertices.length; i++) {
+      vboVertices[i]=0;
     }
     currFaceCount=0;
   }
@@ -71,17 +70,17 @@ class DecodeMesh {
   void resetNormals() {
     for(int i=0,j=0; i<faces.length; i++,j+=12) {
       DecodeFace f=faces[i];
-      glNormals[j]=-f.va.v.normal.x;
-      glNormals[j+1]=-f.va.v.normal.y;
-      glNormals[j+2]=-f.va.v.normal.z;
-      glNormals[j+4]=-f.vb.v.normal.x;
-      glNormals[j+5]=-f.vb.v.normal.y;
-      glNormals[j+6]=-f.vb.v.normal.z;
-      glNormals[j+8]=-f.vc.v.normal.x;
-      glNormals[j+9]=-f.vc.v.normal.y;
-      glNormals[j+10]=-f.vc.v.normal.z;
+      vboNormals[j]=-f.va.v.normal.x;
+      vboNormals[j+1]=-f.va.v.normal.y;
+      vboNormals[j+2]=-f.va.v.normal.z;
+      vboNormals[j+4]=-f.vb.v.normal.x;
+      vboNormals[j+5]=-f.vb.v.normal.y;
+      vboNormals[j+6]=-f.vb.v.normal.z;
+      vboNormals[j+8]=-f.vc.v.normal.x;
+      vboNormals[j+9]=-f.vc.v.normal.y;
+      vboNormals[j+10]=-f.vc.v.normal.z;
     }
-    glModel.updateNormals(glNormals);
+    vbo.updateNormals(vboNormals);
   }
 
   void update() {
@@ -113,17 +112,17 @@ class DecodeMesh {
     if (layerConfig.isEnabled) {
       for(int i=0,j=0; i<currFaceCount; i++,j+=12) {
         DecodeFace f=faces[i];
-        glVerts[j]=f.a.x;
-        glVerts[j+1]=f.a.y;
-        glVerts[j+2]=f.a.z;
-        glVerts[j+4]=f.b.x;
-        glVerts[j+5]=f.b.y;
-        glVerts[j+6]=f.b.z;
-        glVerts[j+8]=f.c.x;
-        glVerts[j+9]=f.c.y;
-        glVerts[j+10]=f.c.z;
+        vboVertices[j]=f.a.x;
+        vboVertices[j+1]=f.a.y;
+        vboVertices[j+2]=f.a.z;
+        vboVertices[j+4]=f.b.x;
+        vboVertices[j+5]=f.b.y;
+        vboVertices[j+6]=f.b.z;
+        vboVertices[j+8]=f.c.x;
+        vboVertices[j+9]=f.c.y;
+        vboVertices[j+10]=f.c.z;
       }
-      glModel.updateVertices(glVerts);
+      vbo.updateVertices(vboVertices);
       if (doUpdateNormals && doUpdate) {
         Vec3D n=new Vec3D();
         for(int i=0,j=0; i<currFaceCount; i++,j+=12) {
@@ -134,37 +133,36 @@ class DecodeMesh {
           else {
             n.set(f.a.sub(f.c).crossSelf(f.a.sub(f.b))).normalize(); 
           }
-          glNormals[j]=n.x;
-          glNormals[j+1]=n.y;
-          glNormals[j+2]=n.z;
-          glNormals[j+4]=n.x;
-          glNormals[j+5]=n.y;
-          glNormals[j+6]=n.z;
-          glNormals[j+8]=n.x;
-          glNormals[j+9]=n.y;
-          glNormals[j+10]=n.z;
+          vboNormals[j]=n.x;
+          vboNormals[j+1]=n.y;
+          vboNormals[j+2]=n.z;
+          vboNormals[j+4]=n.x;
+          vboNormals[j+5]=n.y;
+          vboNormals[j+6]=n.z;
+          vboNormals[j+8]=n.x;
+          vboNormals[j+9]=n.y;
+          vboNormals[j+10]=n.z;
         }
-        glModel.updateNormals(glNormals);
+        vbo.updateNormals(vboNormals);
       }
       if (shader.isSupportedVS) {
         shader.begin();
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_CUBE_MAP, textureIDs[layerConfig.textureID]);
-        glModel.render();
+        vbo.render();
         gl.glDisable(GL.GL_TEXTURE_CUBE_MAP);
         shader.end();
       } 
       else {
         gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, meshColors[layerConfig.colorID].toRGBAArray(null), 0);
         fill(meshColors[layerConfig.colorID].toARGB());
-        glModel.render();
+        vbo.render();
       }
     }
   }
 
   void cleanup() {
-    gl.glDeleteBuffers(1,glModel.vertCoordsVBO,0);
-    gl.glDeleteBuffers(1,glModel.normCoordsVBO,0);
+    vbo.cleanup();
   }
 }
 

@@ -16,57 +16,49 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 class GLSLShader {
-  GL gl;
-  int shaderID=-1;
-  boolean isEnabledVS,isEnabledFS;
-  boolean isSupportedVS,isSupportedFS;
+  final GL gl;
+  final boolean isSupportedVS;
+  final boolean isSupportedFS;
   int vsID,fsID;
+  int shaderID=-1;
 
   GLSLShader(GL gl) {
     this.gl=gl;
     String extensions = gl.glGetString(GL.GL_EXTENSIONS);
     isSupportedVS = extensions.indexOf("GL_ARB_vertex_shader") != -1;
     isSupportedFS = extensions.indexOf("GL_ARB_fragment_shader") != -1;
-    isEnabledVS = isSupportedVS;
-    isEnabledFS = isSupportedFS;
     vsID=-1;
     fsID=-1;
   }
 
-  void createProgramObject() {
+  private void createProgramObject() {
     if (shaderID==-1 && isSupportedVS) {
       shaderID = gl.glCreateProgramObjectARB();
     }
   }
 
+  private int initShaderFromFile(int type, String file) {
+    createProgramObject();
+    String shaderSource=new String(loadBytes(file));
+    int id = gl.glCreateShaderObjectARB(type);
+    gl.glShaderSourceARB(id, 1, new String[]{ shaderSource }, null, 0);
+    gl.glCompileShaderARB(id);
+    checkErrorLog(id);
+    gl.glAttachObjectARB(shaderID, id);
+    return id;
+  }
+
   void loadVertexShader(String file) {
     if (isSupportedVS) {
-      createProgramObject();
-      String shaderSource=join(loadStrings(file),"\n");
-      vsID = gl.glCreateShaderObjectARB(GL.GL_VERTEX_SHADER_ARB);
-      gl.glShaderSourceARB(vsID, 1, new String[]{
-        shaderSource                                           }
-      ,(int[]) null, 0);
-      gl.glCompileShaderARB(vsID);
-      checkLogInfo(vsID);
-      gl.glAttachObjectARB(shaderID, vsID);
+      vsID=initShaderFromFile(GL.GL_VERTEX_SHADER_ARB,file);
     }
   }
 
   void loadFragmentShader(String file) {
     if (isSupportedFS) {
-      createProgramObject();
-      String shaderSource=join(loadStrings(file),"\n");
-      fsID = gl.glCreateShaderObjectARB(GL.GL_FRAGMENT_SHADER_ARB);
-      gl.glShaderSourceARB(fsID, 1, new String[]{
-        shaderSource
-      }
-      , (int[])null, 0);
-      gl.glCompileShaderARB(fsID);
-      checkLogInfo(fsID);
-      gl.glAttachObjectARB(shaderID, fsID);
+      fsID=initShaderFromFile(GL.GL_FRAGMENT_SHADER_ARB,file);
     }
   }
 
@@ -90,7 +82,7 @@ class GLSLShader {
     if (isSupportedVS) {
       gl.glLinkProgramARB(shaderID);
       gl.glValidateProgramARB(shaderID);
-      checkLogInfo(shaderID);
+      checkErrorLog(shaderID);
     }
   }
 
@@ -106,7 +98,7 @@ class GLSLShader {
     } 
   }
 
-  void checkLogInfo(int id) {
+  void checkErrorLog(int id) {
     IntBuffer buf = BufferUtil.newIntBuffer(1);
     gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_INFO_LOG_LENGTH_ARB, buf);
     int len = buf.get();
@@ -116,7 +108,7 @@ class GLSLShader {
       buf.flip();
       gl.glGetInfoLogARB(id, len, buf, rawDesc);
       rawDesc.get(descBytes);
-      println("GLSL Error encountered: " + new String(descBytes));
+      println("GLSL error encountered: " + new String(descBytes));
     }
   }
 
