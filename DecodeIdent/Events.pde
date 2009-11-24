@@ -40,6 +40,15 @@ void keyPressed() {
     if (key=='n' && shader.isSupportedVS) {
       toggleNormals();
     }
+    if (key=='c') {
+      doUseGlobalCursor=!doUseGlobalCursor;
+    }
+    if (key=='-') {
+      cam.targetZoom=max(cam.targetZoom-0.1,0.3);
+    }
+    if (key=='=') {
+      cam.targetZoom=min(cam.targetZoom+0.1,4);
+    }
     if (!online) {
       if (key=='t') {
         saveTiles();

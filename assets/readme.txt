@@ -1,8 +1,8 @@
 DecodeIdent: The V&A Decode generative identity
 
-The Victoria & Albert Museum  has commissioned the artist
-Karsten Schmidt to design a truly malleable, digital identity
-for the Decode exhibition by providing it as open source code.
+The Victoria & Albert Museum  has commissioned Karsten Schmidt
+to design a truly malleable, digital identity for the Decode
+exhibition by providing it as an open source project.
 
 We are giving you the opportunity to recode Karsten's work and
 create your own original artwork. If we love your work it might
@@ -87,13 +87,21 @@ Usage:
 ------------------------------------------------------------------
 
 Please refer to the complete user guide on the project wiki at:
-http://onedotzero-ident.googlecode.com
+http://decode.googlecode.com
 
 If you're interested in extending & creating your own version of the
 software, you can also find development notes on the above site.
-
  
 Key commands:
+
+------------------------------------------------------------------
+Mesh
+------------------------------------------------------------------
+
+U : turn mesh animation on/off
+X : rebuild meshes
+L : turn lighting on/off
+N : turn updating triangle reflection vectors on/off
 
 ------------------------------------------------------------------
 Camera
@@ -102,26 +110,19 @@ Camera
 Shift + mouse click/drag to rotate camera
 (use camera UI tab to adjust other parameters)
 
-Control + 1-9 - store current camera config
-1 - 9 - load stored camera preset
+- / + : adjust camera zoom
+
+1 - 9 : trigger camera preset (by default only 5 are defined)
 
 ------------------------------------------------------------------
-Ribbons/poles
-------------------------------------------------------------------
-
-c - create new poles & ribons
-r - reset ribbons using existing poles
-
-------------------------------------------------------------------
-exporting
+Exporting
 ------------------------------------------------------------------
 
 t - save current frame as tiled XL output (images stored in /export folder)
 space - start/stop recording of image sequence
 
 ------------------------------------------------------------------
-misc
+Misc
 ------------------------------------------------------------------
 
-u - toggle update of the simulation/animation (i.e. use for free frames)
-Escape - quit application
+Escape - quit application (or Command+Q on OSX / Alt+F4 on Windows)

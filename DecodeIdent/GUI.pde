@@ -141,7 +141,7 @@ void initGUI() {
 
   ///////////// camera tab
 
-  s=ui.addSlider("setCamDistance",0.3,3,1,uix,uiy,100,14);
+  s=ui.addSlider("setCamDistance",0.3,4,1,uix,uiy,100,14);
   s.setLabel("zoom");
   s.setTab(tabCam);
 
