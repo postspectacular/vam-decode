@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 int MAX_CAM_PRESETS = 9;
 
 public ControlP5 ui;
@@ -86,7 +86,7 @@ void initGUI() {
   s.setLabel("blue");
   s.setTab(tabMain);
 
-  s=ui.addSlider("bgGradientAlpha",0,1.0,bgGradientAlpha,uix+350,uiy,100,14);
+  s=ui.addSlider("targetGradAlpha",0,1.0,targetGradAlpha,uix+350,uiy,100,14);
   s.setLabel("gradient intensity");
   s.setTab(tabMain);
 
@@ -117,16 +117,24 @@ void initGUI() {
     yoff=80;
   }
 
-  t=ui.addToggle("doUseGlobalCursor",doUseGlobalCursor,uix,uiy+yoff,14,14);
+  t=ui.addToggle("doUpdate",doUpdate,uix,uiy+yoff,14,14);
+  t.setLabel("animation on/off");
+  t.setTab(tabMain);
+  
+  t=ui.addToggle("doUseGlobalCursor",doUseGlobalCursor,uix,uiy+yoff+40,14,14);
   t.setLabel("use manual cursor");
   t.setTab(tabMain);
 
+  s=ui.addSlider("setCursorDamping",0,0.95,explodeCursor.damping,uix+200,uiy+yoff+40,100,14);
+  s.setLabel("cursor springiness");
+  s.setTab(tabMain);
+
   if (shader.isSupportedVS) {
-    t=ui.addToggle("doUseLights",doUseLights,uix,uiy+yoff+40,14,14);
+    t=ui.addToggle("doUseLights",doUseLights,uix,uiy+yoff+80,14,14);
     t.setLabel("lighting on/off");
     t.setTab(tabMain);
 
-    t=ui.addToggle("toggleNormals",doUpdateNormals,uix,uiy+yoff+80,14,14);
+    t=ui.addToggle("toggleNormals",doUpdateNormals,uix,uiy+yoff+120,14,14);
     t.setLabel("update normals on/off");
     t.setTab(tabMain);
   }
@@ -171,7 +179,7 @@ void initGUI() {
   b=ui.addBang("resetArcBall",uix+400,uiy+120,14,14);
   b.setLabel("reset arcball");
   b.setTab(tabCam);
-  
+
   r =ui.addRadio("setCameraPreset",uix,uiy+160);
   r.setBroadcast(false);
   for(int i=0; i<cameraPresets.size(); i++) {
@@ -260,7 +268,7 @@ public void controlEvent(ControlEvent e) {
 }
 
 public void updateUIColors() {
-  if (bgColor.brightness()>0.5) {
+  if (targetBgColor.brightness()>0.5) {
     ui.setColorActive(0xff333333);
     ui.setColorBackground(0xff666666);
     ui.setColorForeground(0xffcccccc);
@@ -350,17 +358,17 @@ public void setMeshComparator(int id) {
 }
 
 public void setBGRed(float r) {
-  bgColor.setRed(r);
+  targetBgColor.setRed(r);
   updateUIColors();
 }
 
 public void setBGGreen(float g) {
-  bgColor.setGreen(g);
+  targetBgColor.setGreen(g);
   updateUIColors();
 }
 
 public void setBGBlue(float b) {
-  bgColor.setBlue(b);
+  targetBgColor.setBlue(b);
   updateUIColors();
 }
 
@@ -412,6 +420,7 @@ public void randomizeColors() {
 
 public void toggleNormals() {
   doUpdateNormals=!doUpdateNormals;
+  doUpdateOnce=true;
   if (!doUpdateNormals) {
     for(Iterator i=meshes.iterator(); i.hasNext();) {
       DecodeMesh mesh=(DecodeMesh)i.next();
@@ -431,14 +440,14 @@ public void saveCameraPreset(int id) {
     if (cameraPresets.size()<MAX_CAM_PRESETS) {
       id=cameraPresets.size();
       uiSavePresetRadio.addItem("save as preset #"+(id+1),id);
-      uiLoadPresetRadio.addItem("load as preset #"+(id+1),id);
-      uiSavePresetRadio.addItem("add as preset",-1);
-      cameraPresets.add(new CameraPreset(arcBall.currOrientation.copy(), cam.pos.copy(), cam.zoom));
+      uiLoadPresetRadio.addItem("load preset #"+(id+1),id);
+      uiSavePresetRadio.addItem("add as new preset",-1);
+      cameraPresets.add(new CameraPreset(arcBall.currOrientation.copy(), cam.pos.copy(), cam.zoom, bgColor, bgGradientAlpha));
     }
   } 
   else {
     CameraPreset cp=(CameraPreset)cameraPresets.get(id);
-    cp.set(arcBall.currOrientation, cam.pos, cam.zoom);
+    cp.set(arcBall.currOrientation, cam.pos, cam.zoom, bgColor, bgGradientAlpha);
   }
 }
 
@@ -448,4 +457,8 @@ public void setArcballSpeed(float s) {
 
 public void resetArcBall() {
   arcBall.reset();
+}
+
+public void setCursorDamping(float d) {
+  explodeCursor.damping=d;
 }

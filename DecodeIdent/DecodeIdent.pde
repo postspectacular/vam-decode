@@ -44,7 +44,7 @@ public SeedConfiguration seed;
 // window settings
 int WIDTH=960;
 int HEIGHT=540;
-public TColor bgColor;
+public TColor bgColor,targetBgColor;
 
 public PApplet app;
 public PGraphicsOpenGL pgl;
@@ -79,6 +79,7 @@ public ArcBall arcBall;
 
 // application & interface switches
 public boolean doUpdate=true;
+public boolean doUpdateOnce;
 public boolean doUseLights=true;
 public boolean doUseGlobalCursor=false;
 public boolean doUpdateNormals=true;
@@ -92,6 +93,8 @@ public int numExportTiles=3;
 public int meshBuildSpeed=33;
 public float meshFuzziness=0.1;
 public float bgGradientAlpha=1;
+public float targetGradAlpha=1;
+
 public Comparator meshComparator=new FaceDistanceComparator(new Vec3D(),meshFuzziness);
 
 // initialization method
@@ -132,6 +135,8 @@ void draw() {
   }
   // apply field of view
   cam.setPerspective();
+  bgColor.blend(targetBgColor,0.02);
+  bgGradientAlpha+=(targetGradAlpha-bgGradientAlpha)*0.02;
   background(bgColor.toARGB());
   // move into 3D coordinate system
   pushMatrix();
@@ -214,11 +219,12 @@ void updateMeshes() {
     explodeCursor.update(new Vec3D(-(width/2-mouseX)*1.5,-(height/2-mouseY)*1.5,0));
   }
   // update mesh triangle explosions based on current focal point(s)
-  if(doUpdate) {
+  if(doUpdate || doUpdateOnce) {
     for(Iterator i=meshes.iterator(); i.hasNext();) {
       DecodeMesh mesh=(DecodeMesh)i.next();
       mesh.update();
       mesh.explode(doUseGlobalCursor ? explodeCursor : m.layerConfig.explodeCursor);
+      doUpdateOnce=false;
     }
   }
 }
@@ -291,6 +297,7 @@ void initConfig() {
       HEIGHT=config.getInt("app.height",HEIGHT);
     }
     bgColor=TColor.newHex(config.getProperty("app.bgcolor","000000"));
+    targetBgColor=bgColor.copy();
   }
   catch(IOException e) {
     println("couldn't load config");
@@ -381,6 +388,11 @@ void initCameraPresets() {
     Quaternion orient=new Quaternion(parseFloat(q[0]),parseFloat(q[1]),parseFloat(q[2]),parseFloat(q[3]));
     String[] p=split(config.getProperty(prop+"pos","0,0,0"),",");
     Vec3D pos=new Vec3D(parseFloat(p[0]),parseFloat(p[1]),parseFloat(p[2]));
-    cameraPresets.add(new CameraPreset(orient,pos,config.getFloat(prop+"zoom",1)));
+    TColor bg=null;
+    String hexCol=config.getProperty(prop+"bg",null);
+    if (hexCol!=null) {
+      bg=TColor.newHex(hexCol);
+    }
+    cameraPresets.add(new CameraPreset(orient,pos,config.getFloat(prop+"zoom",1),bg,1));
   }
 }

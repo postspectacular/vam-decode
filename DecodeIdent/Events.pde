@@ -34,6 +34,12 @@ void keyPressed() {
     if (key=='r') {
       toggleCamAutoRotation();
     }
+    if (key=='l') {
+      doUseLights=!doUseLights;
+    }
+    if (key=='n' && shader.isSupportedVS) {
+      toggleNormals();
+    }
     if (!online) {
       if (key=='t') {
         saveTiles();

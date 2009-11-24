@@ -36,11 +36,11 @@ public class CameraState {
   private AbstractWave camModX, camModY;
 
   public float maxModAmpX = radians(15);
-  public float maxModAmpY = radians(60);
+  public float maxModAmpY = radians(30);
 
   public CameraState() {
-    camModX = new SineWave(PI, 0.01f, 0, 0);
-    camModY = new SineWave(0, 0.004f, 0, 0);
+    camModX = new SineWave(PI, 0.02f, 0, 0);
+    camModY = new SineWave(0, 0.0083f, 0, 0);
   }
 
   public void apply() {
@@ -82,21 +82,31 @@ class CameraPreset {
   Quaternion orient;
   Vec3D pos;
   float zoom;
-
-  CameraPreset(Quaternion orient, Vec3D pos, float zoom) {
-    set(orient,pos,zoom);
+  TColor bg;
+  float gradAlpha;
+  
+  CameraPreset(Quaternion orient, Vec3D pos, float zoom, TColor bg, float a) {
+    set(orient,pos,zoom,bg,a);
   }
   
   void activate() {
     arcBall.targetOrientation.set(orient);
     cam.targetPos.set(pos);
     cam.targetZoom=zoom;
+    targetGradAlpha=gradAlpha;
+    if (bg!=null) {
+      targetBgColor=bg.copy();
+    }
   }
   
-  void set(Quaternion orient, Vec3D pos, float zoom) {
+  void set(Quaternion orient, Vec3D pos, float zoom, TColor bg, float a) {
     this.orient=orient.copy();
     this.pos=pos.copy();
     this.zoom=zoom;
+    this.gradAlpha=a;
+    if (bg!=null) {
+      this.bg=bg.copy();
+    }
   }
 }
 

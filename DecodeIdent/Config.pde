@@ -60,10 +60,10 @@ class IsoLayerConfig {
     focus=new ExtrudeFocus(config.getFloat(baseProp+"focus.x",0),config.getFloat(baseProp+"focus.speed",1),config.getFloat(baseProp+"focus.min",-volume.getScale().x),config.getFloat(baseProp+"focus.max",volume.getScale().x));
     extrudeInfluenceWidth=config.getFloat(baseProp+"displace.width",400);
     explodeAmp=config.getFloat(baseProp+"explode.amp",10);
-    explodeAmpMod=new SineWave(0,random(0.005,0.02),2,2);
+    explodeAmpMod=new SineWave(0,random(0.015,0.03),2,2);
     explodeCursor=new Vec3D(-500,0,0);
-    cursorModX=new SineWave(0,random(0.005,0.015),500,0);
-    cursorModY=new SineWave(0,random(0.005,0.02),200,0);
+    cursorModX=new SineWave(0,random(0.005,0.015),250,0);
+    cursorModY=new SineWave(0,random(0.005,0.02),50,0);
     name="layer "+isoValue;
   }
 
