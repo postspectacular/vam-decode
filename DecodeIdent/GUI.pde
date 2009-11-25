@@ -35,6 +35,8 @@ String selectedTabName="default";
 //
 // Some parts of the GUI are conditional or based on external config
 // settings and therefore created dynamically...
+//
+// All interface elements are created so they're grouped by tab
 
 void initGUI() {
   ui=new ControlP5(this);
@@ -126,7 +128,7 @@ void initGUI() {
   t=ui.addToggle("doUpdate",doUpdate,uix,uiy+yoff,14,14);
   t.setLabel("animation on/off");
   t.setTab(tabMain);
-  
+
   t=ui.addToggle("doUseGlobalCursor",doUseGlobalCursor,uix,uiy+yoff+40,14,14);
   t.setLabel("use manual cursor");
   t.setTab(tabMain);
@@ -267,11 +269,17 @@ void initGUI() {
   }
 }
 
+// this is a generic UI event listener which we use to
+// check if a new tab has been selected. this in turn is picked up
+// by the main method to check if usage instructions are to be shown
+
 public void controlEvent(ControlEvent e) {
   if (e.isTab()) {
     selectedTabName = e.tab().getTab().name();
   }
 }
+
+// the UI colors are changing depending on the brightness of the background color
 
 public void updateUIColors() {
   if (targetBgColor.brightness()>0.5) {
@@ -290,11 +298,17 @@ public void updateUIColors() {
   }
 }
 
+// callback for editing the text field
+// initializes a new seed message and re-creates
+// the volumetric space and all meshes
+
 public void setSeedMessage(String txt) {
-  seed.setMessage(txt);
-  initVolume(seed);
-  initMeshes();
-  doUpdate=true;
+  if (txt.length()>0) {
+    seed.setMessage(txt);
+    initVolume(seed);
+    initMeshes();
+    doUpdate=true;
+  }
 }
 
 public void setCamDistance(float zoom) {
@@ -304,6 +318,9 @@ public void setCamDistance(float zoom) {
 public void setZoomSmooth(float s) {
   cam.zoomSmooth=s;
 }
+
+// adjusts the highres export settings and displays
+// the actual physical output size at 300dpi
 
 public void setNumExportTiles(int num) {
   numExportTiles = num;
@@ -315,11 +332,15 @@ public void setNumExportTiles(int num) {
   uiLabelNumTiles.setValue(totalWidth + " x " + totalHeight + " (" + px + " x " + py + " mm @ 300 dpi)");
 }
 
+// triggers the exporting of a highres image
+
 public void saveTiles() {
   tiler.initTiles(cam.fov, cam.near, cam.far);
   tiler.save(sketchPath("export"), "odz-xl-"
     + (System.currentTimeMillis() / 1000), "tga");
 }
+
+// starts/stops the exporting of an image sequence
 
 public void toggleExport() {
   if (exporter.isExporting()) {
@@ -349,6 +370,11 @@ public void rebuildMeshes() {
   }
 }
 
+// the mesh comparator is used to create different
+// criteria and orderings for rebuilding meshes
+// upon rebuilding all mesh triangles are sorted based on
+// these criteria and so create different reveal effects
+
 public void setMeshComparator(int id) {
   switch(id) {
   case 0:
@@ -362,6 +388,8 @@ public void setMeshComparator(int id) {
     break;
   }
 }
+
+// updates background colour
 
 public void setBGRed(float r) {
   targetBgColor.setRed(r);
@@ -377,6 +405,8 @@ public void setBGBlue(float b) {
   targetBgColor.setBlue(b);
   updateUIColors();
 }
+
+// updates shader refraction parameters
 
 public void setRefractRed(float r) {
   shader.begin();
@@ -418,11 +448,17 @@ public void setCamPosSpeed(float s) {
   cam.panSmooth=s;
 }
 
+// only used when no shaders are available
+// creates a new pool of random colours for meshes
+
 public void randomizeColors() {
   for(int i=0; i<meshColors.length; i++) {
     meshColors[i]=TColor.newRandom();
   }
 }
+
+// turns on/off the updating of triangle orientation (normal)
+// vectors. when turned off, the original mesh normals are re-used
 
 public void toggleNormals() {
   doUpdateNormals=!doUpdateNormals;
@@ -438,6 +474,9 @@ public void setCameraPreset(int id) {
   cam.isCamModEnabled=false;
   ((CameraPreset)cameraPresets.get(id)).activate();
 }
+
+// saves current camera configuration as preset and updates
+// the UI list of available presets
 
 public void saveCameraPreset(int id) {
   if(id==-1) {
@@ -464,6 +503,9 @@ public void resetArcBall() {
   arcBall.reset();
 }
 
+// adjusts springiness of manual explode cursor
+
 public void setCursorDamping(float d) {
   explodeCursor.damping=d;
 }
+

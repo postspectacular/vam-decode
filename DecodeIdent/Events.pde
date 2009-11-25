@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
+// this file only contains the various keyboard & mouse event listeners
+
 void keyPressed() {
   if (keyCode == SHIFT) {
     isShiftDown = true;

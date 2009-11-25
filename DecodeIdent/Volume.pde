@@ -16,7 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
+// this method takes the currently chosen word and renders it into
+// an offscreen image buffer which is then used to create a volumetric
+// version of the word (see below)
 PImage createVolumeSeedImage(SeedConfiguration seed) {
   int w=config.getInt("volume.seed.img.width",192);
   int h=config.getInt("volume.seed.img.height",64);
@@ -31,6 +34,18 @@ PImage createVolumeSeedImage(SeedConfiguration seed) {
   seedImg.loadPixels();
   return seedImg;
 }
+
+// This method sets up the volumetric space and surface.
+// Calls the createVolumeSeedImage() method above and then
+// continues parsing the bitmap image pixel by pixel. For all
+// non-white pixels a corresponding set of 3D voxels is drawn
+// in the volumetric space (using a VolumetricBrush), resulting
+// in a space which has high density areas where the letters
+// are in the 2D bitmap.
+//
+// For more information and examples of similar techniques
+// please have a look at the volumeutils package of the toxiclibs
+// project at: http://toxiclibs.org/
 
 void initVolume(SeedConfiguration seed) {
   PImage seedImg=createVolumeSeedImage(seed);

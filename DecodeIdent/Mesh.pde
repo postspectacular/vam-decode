@@ -17,6 +17,15 @@
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * This class handles the creation & manipulation of individual contour meshes extracted
+ * from the volumetric version of the wordmark. It takes a preconfigured IsoSurface instance,
+ * applies its configured contour value and then post-processes the created mesh by wrapping
+ * each resulting vertex in a DecodeVertex and triangles in DecodeFace instances (see below).
+ * 
+ * For better performance the final mesh is stored as OpenGL Vertex Buffer Object directly
+ * on the graphics card.
+ */
 class DecodeMesh {
   DecodeFace[] faces;
   DecodeVertex[] vertices;
@@ -34,29 +43,37 @@ class DecodeMesh {
   }
 
   void init() {
+    // create an empty mesh container
     TriangleMesh mesh = new TriangleMesh(layerConfig.name);
+    // recompute the contour surface based on config settings
     surface.reset();
     surface.computeSurfaceMesh(mesh, layerConfig.isoValue);
     surface.computeSurfaceMesh(mesh, layerConfig.isoValue);
-    mesh.center(null);
+    // compute smoothened surface normal vectors
     mesh.computeVertexNormals();
+    // now wrap all mesh vertices in a DecodeVertex instance
     vertices=new DecodeVertex[mesh.vertices.size()];
     for(Iterator i=mesh.vertices.values().iterator(); i.hasNext();) {
       TriangleMesh.Vertex v=(TriangleMesh.Vertex)i.next();
       vertices[v.id]=new DecodeVertex(v);
     }
+    // do the same for faces using DecodeFace instances
     faces=new DecodeFace[mesh.faces.size()];
     int idx=0;
     for(Iterator i=mesh.faces.iterator(); i.hasNext();) {
       TriangleMesh.Face f=(TriangleMesh.Face)i.next();
       faces[idx++]=new DecodeFace(vertices[f.a.id],vertices[f.b.id],vertices[f.c.id]);
     }
+    // create vertex buffer object for this mesh
     vbo=new VBO(faces.length*3);
     // 3 vertices per face (alignment of 4 bytes)
     vboVertices=new float[faces.length*12];
     vboNormals=new float[vboVertices.length];
     restart();
   }
+
+  // resort all triangles based on currently chosen criteria
+  // and reset active face count to slowly reveal the mesh again
 
   void restart() {
     Arrays.sort(faces,meshComparator);
@@ -67,6 +84,7 @@ class DecodeMesh {
     currFaceCount=0;
   }
 
+  // revert mesh normals to original state
   void resetNormals() {
     for(int i=0,j=0; i<faces.length; i++,j+=12) {
       DecodeFace f=faces[i];
@@ -83,6 +101,7 @@ class DecodeMesh {
     vbo.updateNormals(vboNormals);
   }
 
+  // if layer is enabled, update all mesh vertices and reveal more faces
   void update() {
     if (layerConfig.isEnabled) {
       currFaceCount=min(currFaceCount+(int)(random(0.1,1)*meshBuildSpeed),faces.length);
@@ -92,6 +111,8 @@ class DecodeMesh {
     }
   }
 
+  // only applied to outer layer, animates/extrudes individual vertices based
+  // on sine waves and slowly moving focus point around which displacement is weakest
   void displace() {
     for (int i=0; i<vertices.length; i++) {
       DecodeVertex v=vertices[i];
@@ -101,12 +122,16 @@ class DecodeMesh {
     }  
   }
 
+  // apply current explosion settings to all mesh triangles
   void explode(Vec3D cursor) {
     float amp=layerConfig.explodeAmpMod.update()*layerConfig.explodeAmp;
     for(int i=0; i<faces.length; i++) {
       faces[i].explode(cursor,amp);
     }
   }
+
+  // updates vertex positions in VBO object on graphics card
+  // and then triggers rendering in one go
 
   void render() {
     if (layerConfig.isEnabled) {
@@ -161,11 +186,17 @@ class DecodeMesh {
     }
   }
 
+  // frees up all mesh resources on the graphics card
+  // called when rebuilding meshes
   void cleanup() {
     vbo.cleanup();
   }
 }
 
+/**
+ * This is a simple wrapper for a mesh vertex which supplements it
+ * with a modulation wave used to create extrusion effects
+ */
 class DecodeVertex extends Vec3D {
   TriangleMesh.Vertex v;
   AbstractWave distortion;
@@ -183,6 +214,10 @@ class DecodeVertex extends Vec3D {
   }
 }
 
+/**
+ * Wrapper for a mesh triangle. Stores original vertices and additional vectors
+ * to store current/exploded positions of the triangle points.
+ */
 class DecodeFace {
   final Vec3D a,b,c,explodeDir,centroid;
   float explodeAmp;
@@ -207,6 +242,10 @@ class DecodeFace {
 
   }
 
+  // applies explosion to all 3 corner points
+  // explosion direction & amount is based on the current centroid
+  // of the triangle and its distance to the explosion epicentre
+  
   void explode(Vec3D focus,float amp) {
     centroid.set(va).addSelf(vb).addSelf(vc).scaleSelf(0.333);
     explodeDir.set(centroid).subSelf(focus);

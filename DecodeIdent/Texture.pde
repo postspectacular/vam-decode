@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
+// defines order of faces for the 6-sided cube texture used for environment mapping
+
 int[] cubeMapFaceOrder = new int[]{
   GL.GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
   GL.GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
@@ -25,15 +27,18 @@ int[] cubeMapFaceOrder = new int[]{
 
 int[] textureIDs;
 
+// initializes the configured number of texture bitmaps and
+// creates cubemap textures of them
 void initTextures() {
   int numTextures=config.getInt("texture.count",1);
   textureIDs=new int[numTextures];
   for(int i=0; i<numTextures; i++) {
     textureIDs[i]=loadCubeMap("tex/tex"+i+".jpg");
-    println("tex id: "+textureIDs[i]);
   }
 }
 
+// creates the OpenGL texture structure, loads a single bitmap file and
+// applies it to all 6 sides of the cube texture
 int loadCubeMap(String fileName){
   int[] texID=new int[1];
   gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);

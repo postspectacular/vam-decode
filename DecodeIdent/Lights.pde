@@ -16,13 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
+/**
+ * If lighting is enabled this method is being called every frame from
+ * the main draw() loop. It is responsible for setting up 
+ */
 void initLights() {
   TColor matSpecular=TColor.newRGB(1,1,1);
 
   int lightID1=GL.GL_LIGHT0;
   int lightID2=GL.GL_LIGHT1;
-  
+
   Vec3D lightPos1=new Vec3D(0,-1000,6000).normalize();
   Vec3D lightPos2=new Vec3D(-1000,2000,-6000).normalize();
 
@@ -39,7 +43,7 @@ void initLights() {
   gl.glLightfv(lightID1, GL.GL_DIFFUSE, lightDiffuse.toRGBAArray(null), 0);
   gl.glLightfv(lightID1, GL.GL_SPECULAR, lightSpecular.toRGBAArray(null), 0);
   gl.glLightfv(lightID1, GL.GL_AMBIENT, lightAmbient.toRGBAArray(null), 0);
-  
+
   gl.glLightfv(lightID2, GL.GL_POSITION, lightPos2.toArray(), 0);
   gl.glLightfv(lightID2, GL.GL_DIFFUSE, lightDiffuse.toRGBAArray(null), 0);
   gl.glLightfv(lightID2, GL.GL_SPECULAR, lightSpecular.toRGBAArray(null), 0);
@@ -49,3 +53,4 @@ void initLights() {
   gl.glEnable(lightID1);
   gl.glEnable(lightID2);
 }
+

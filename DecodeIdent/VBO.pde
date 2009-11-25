@@ -17,20 +17,25 @@
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * A reusable, barebones wrapper for OpenGL Vertex Buffer Objects.
+ * Only handles actual vertex and normal buffers and assumes they can be
+ * dynamically modified/updated.
+ */
 class VBO {
-  
+
   final int STRIDE = BufferUtil.SIZEOF_FLOAT * 4;
-  
+
   int numVertices;
   int[] vertID = new int[1];
   int[] normID = new int[1];
-  
+
   VBO(int num) {
     numVertices = num;
     initBuffer(vertID);
     initBuffer(normID);
   }
-  
+
   void initBuffer(int[] bufferID) {
     gl.glGenBuffersARB(1, bufferID, 0);
     gl.glBindBufferARB(GL.GL_ARRAY_BUFFER_ARB, bufferID[0]);
@@ -48,7 +53,7 @@ class VBO {
   void updateVertices(float[] vertices) {
     updateBuffer(vertID[0],vertices);
   }
-  
+
   void updateNormals(float[] normals) {
     updateBuffer(normID[0],normals);
   }
@@ -67,7 +72,7 @@ class VBO {
     gl.glDisableClientState(GL.GL_VERTEX_ARRAY);	    
     if (normID != null) gl.glDisableClientState(GL.GL_NORMAL_ARRAY);
   }
-  
+
   void cleanup() {
     gl.glDeleteBuffers(1,vertID,0);
     gl.glDeleteBuffers(1,normID,0);

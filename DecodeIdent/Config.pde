@@ -16,7 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
+/**
+ * The seed configuration class stores the actual wordmark text and
+ * font settings used for rendering it
+ */
 class SeedConfiguration {
   String message;
   PFont font;
@@ -35,6 +39,11 @@ class SeedConfiguration {
   }
 }
 
+/**
+ * This class defines all parameters for an individual contour layer.
+ * The constructor parses its settings from the given config file. The class
+ * itself is mainly used for generating the GUI and DecodeMesh instances.
+ */
 class IsoLayerConfig {
   int id;
   String name;
@@ -45,7 +54,7 @@ class IsoLayerConfig {
   boolean isEnabled=true;
   int textureID;
   int colorID;
-  
+
   AbstractWave explodeAmpMod;
 
   Vec3D explodeCursor;
@@ -61,8 +70,8 @@ class IsoLayerConfig {
     extrudeInfluenceWidth=config.getFloat(baseProp+"displace.width",400);
     explodeAmp=config.getFloat(baseProp+"explode.amp",10);
     explodeAmpMod=new SineWave(0,random(0.015,0.03),2,2);
-    explodeCursor=new Vec3D(-500,0,0);
-    cursorModX=new SineWave(0,random(0.005,0.015),250,0);
+    explodeCursor=new Vec3D();
+    cursorModX=new SineWave(0,random(0.005,0.02),250,0);
     cursorModY=new SineWave(0,random(0.005,0.02),50,0);
     name="layer "+isoValue;
   }
@@ -89,6 +98,10 @@ class IsoLayerConfig {
   }
 }
 
+/**
+ * Defines a 1-dimensional, moving focus point used for
+ * extruding vertices on the outermost mesh layer (to create spikes).
+ */
 class ExtrudeFocus {
   float x,speed,min,max;
 
