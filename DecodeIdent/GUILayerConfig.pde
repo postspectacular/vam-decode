@@ -16,7 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
+// this class creates the repetitive UI for a single mesh layer configuration
+// in the "layer" UI tab. All events are responded to from in here (via
+// anonymous event handlers/listeners)
+
 class GuiLayerConfig {
   IsoLayerConfig layer;
   int id;

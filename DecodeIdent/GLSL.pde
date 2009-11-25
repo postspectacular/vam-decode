@@ -17,6 +17,11 @@
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * This class is a barebones wrapper for a GLSL shader pair.
+ * All shader update methods are checked for availability in order to avoid
+ * OpenGL errors and to free the main app from having to do those checks.
+ */
 class GLSLShader {
   final GL gl;
   final boolean isSupportedVS;
@@ -24,7 +29,7 @@ class GLSLShader {
   int vsID,fsID;
   int shaderID=-1;
 
-  GLSLShader(GL gl) {
+  public GLSLShader(GL gl) {
     this.gl=gl;
     String extensions = gl.glGetString(GL.GL_EXTENSIONS);
     isSupportedVS = extensions.indexOf("GL_ARB_vertex_shader") != -1;
@@ -33,36 +38,38 @@ class GLSLShader {
     fsID=-1;
   }
 
-  private void createProgramObject() {
+  protected void createProgramObject() {
     if (shaderID==-1 && isSupportedVS) {
       shaderID = gl.glCreateProgramObjectARB();
     }
   }
 
-  private int initShaderFromFile(int type, String file) {
+  private int initFromFile(int type, String file) {
     createProgramObject();
-    String shaderSource=new String(loadBytes(file));
+    String src=new String(loadBytes(file));
     int id = gl.glCreateShaderObjectARB(type);
-    gl.glShaderSourceARB(id, 1, new String[]{ shaderSource }, null, 0);
+    gl.glShaderSourceARB(id, 1, new String[]{ 
+      src     }
+    , null, 0);
     gl.glCompileShaderARB(id);
     checkErrorLog(id);
     gl.glAttachObjectARB(shaderID, id);
     return id;
   }
 
-  void loadVertexShader(String file) {
+  public void loadVertexShader(String file) {
     if (isSupportedVS) {
-      vsID=initShaderFromFile(GL.GL_VERTEX_SHADER_ARB,file);
+      vsID=initFromFile(GL.GL_VERTEX_SHADER_ARB,file);
     }
   }
 
-  void loadFragmentShader(String file) {
+  public void loadFragmentShader(String file) {
     if (isSupportedFS) {
-      fsID=initShaderFromFile(GL.GL_FRAGMENT_SHADER_ARB,file);
+      fsID=initFromFile(GL.GL_FRAGMENT_SHADER_ARB,file);
     }
   }
 
-  int getAttribLocation(String name) {
+  public int getAttribLocation(String name) {
     int attrib=-1;
     if (isSupportedVS) {
       attrib=gl.glGetAttribLocationARB(shaderID,name);
@@ -70,7 +77,7 @@ class GLSLShader {
     return attrib;
   }
 
-  int getUniformLocation(String name) {
+  public int getUniformLocation(String name) {
     int loc=-1;
     if (isSupportedVS) {
       loc=gl.glGetUniformLocationARB(shaderID,name);
@@ -78,7 +85,7 @@ class GLSLShader {
     return loc;
   }
 
-  void useShaders() {
+  public void useShaders() {
     if (isSupportedVS) {
       gl.glLinkProgramARB(shaderID);
       gl.glValidateProgramARB(shaderID);
@@ -86,19 +93,19 @@ class GLSLShader {
     }
   }
 
-  void begin() {
+  public void begin() {
     if (isSupportedVS) {
       gl.glUseProgramObjectARB(shaderID); 
     }
   }
 
-  void end() {
+  public void end() {
     if (isSupportedVS) {
       gl.glUseProgramObjectARB(0);
     } 
   }
 
-  void checkErrorLog(int id) {
+  public void checkErrorLog(int id) {
     IntBuffer buf = BufferUtil.newIntBuffer(1);
     gl.glGetObjectParameterivARB(id, GL.GL_OBJECT_INFO_LOG_LENGTH_ARB, buf);
     int len = buf.get();
@@ -112,14 +119,14 @@ class GLSLShader {
     }
   }
 
-  void setParameter(String id, int v) {
+  public void setParameter(String id, int v) {
     int loc=getUniformLocation(id);
     if (loc!=-1) {
       gl.glUniform1iARB(loc,v);
     }
   }
 
-  void setParameter(String id, float v) {
+  public void setParameter(String id, float v) {
     int loc=getUniformLocation(id);
     if (loc!=-1) {
       gl.glUniform1fARB(loc,v);

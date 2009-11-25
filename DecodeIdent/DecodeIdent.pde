@@ -88,6 +88,7 @@ public boolean isShiftDown=false;
 public boolean isControlDown = false;
 
 // default values
+public int MAX_CAM_PRESETS = 9;
 public int numExportTiles=3;
 public int meshBuildSpeed=33;
 public float meshFuzziness=0.1;

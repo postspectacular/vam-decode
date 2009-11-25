@@ -17,8 +17,6 @@
  * along with DecodeIdent. If not, see <http://www.gnu.org/licenses/>.
  */
 
-int MAX_CAM_PRESETS = 9;
-
 public ControlP5 ui;
 public Textfield uiMessage;
 
@@ -31,12 +29,20 @@ public GuiLayerConfig[] guiLayers;
 
 String selectedTabName="default";
 
+// This method is in charge of creating all interface elements
+// using the ControlP5 library. Each controller element is attached
+// to a event callback function or directly to a variable.
+//
+// Some parts of the GUI are conditional or based on external config
+// settings and therefore created dynamically...
+
 void initGUI() {
   ui=new ControlP5(this);
   updateUIColors();
   ui.setAutoInitialization(false);
   ui.getTab("default").setLabel("present");
 
+  // border width & height
   int uix=20;
   int uiy=40;
 
