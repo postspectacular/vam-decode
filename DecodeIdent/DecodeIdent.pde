@@ -298,10 +298,10 @@ void initConfig() {
     targetBgColor=bgColor.copy();
   }
   catch(IOException e) {
-    println("couldn't load config");
-    System.exit(1);
   }
   catch(NullPointerException e) {
+  }
+  if (config==null) {
     println("couldn't load config");
     System.exit(1);
   }
@@ -321,7 +321,7 @@ void initSeed() {
 // from the config file
 
 void initLayers() {
-  int numLayers=config.getInt("volume.layer.count",1);
+  int numLayers=config.getInt("volume.layer.count", 1);
   layers=new IsoLayerConfig[numLayers];
   for(int i=0; i<numLayers; i++) {
     layers[i]=new IsoLayerConfig(i);
@@ -341,7 +341,7 @@ void initMeshes() {
   meshes=new ArrayList();
   for(int i=0; i<layers.length; i++) {
     IsoLayerConfig lc=layers[i];
-    DecodeMesh dm=new DecodeMesh(surface,lc);
+    DecodeMesh dm=new DecodeMesh(surface, lc);
     meshes.add(dm);
   }
 }
@@ -372,10 +372,10 @@ void initShaders() {
   shader.loadVertexShader(name+".vs");
   shader.loadFragmentShader(name+".fs");
   shader.useShaders();
-  setFresnel(config.getFloat("shader.fresnel",5));
-  setRefractRed(config.getFloat("shader.etaR",0.65));
-  setRefractGreen(config.getFloat("shader.etaG",0.67));
-  setRefractBlue(config.getFloat("shader.etaB",0.69));
+  setFresnel(config.getFloat("shader.fresnel", 5));
+  setRefractRed(config.getFloat("shader.etaR", 0.65));
+  setRefractGreen(config.getFloat("shader.etaG", 0.67));
+  setRefractBlue(config.getFloat("shader.etaB", 0.69));
 }
 
 // in case the graphics card doesn't support shaders
@@ -387,7 +387,7 @@ void initColors() {
   int numCol=config.getInt("mesh.color.count",5);
   meshColors=new TColor[numCol];
   for(int i=0; i<numCol; i++) {
-    meshColors[i]=TColor.newHex(config.getProperty("mesh.color"+i,"ffffff"));
+    meshColors[i]=TColor.newHex(config.getProperty("mesh.color"+i, "ffffff"));
   }
 }
 
@@ -398,16 +398,21 @@ void initCameraPresets() {
   int numPresets=config.getInt("cam.preset.count",0);
   cameraPresets=new ArrayList();
   for(int i=0; i<numPresets; i++) {
-    String prop="cam.preset"+i+".";
-    String[] q=split(config.getProperty(prop+"quat","1,0,0,0"),",");
-    Quaternion orient=new Quaternion(parseFloat(q[0]),parseFloat(q[1]),parseFloat(q[2]),parseFloat(q[3]));
-    String[] p=split(config.getProperty(prop+"pos","0,0,0"),",");
-    Vec3D pos=new Vec3D(parseFloat(p[0]),parseFloat(p[1]),parseFloat(p[2]));
+    String baseProp="cam.preset"+i+".";
+    float[] q=config.getFloatArray(baseProp+"quat", new float[] {
+      1, 0, 0, 0     }
+    );
+    Quaternion orient=new Quaternion(q[0], q[1], q[2], q[3]);
+    float[] p=config.getFloatArray(baseProp+"pos", new float[] { 
+      0, 0, 0     }
+    );
+    Vec3D pos=new Vec3D(p[0], p[1], p[2]);
     TColor bg=null;
-    String hexCol=config.getProperty(prop+"bg",null);
+    String hexCol=config.getProperty(baseProp+"bg", null);
     if (hexCol!=null) {
       bg=TColor.newHex(hexCol);
     }
-    cameraPresets.add(new CameraPreset(orient,pos,config.getFloat(prop+"zoom",1),bg,1));
+    cameraPresets.add(new CameraPreset(orient, pos, config.getFloat(baseProp+"zoom", 1), bg, 1));
   }
 }
+
