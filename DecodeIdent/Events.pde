@@ -27,23 +27,28 @@ void keyPressed() {
     isControlDown = true;
   }
   if (!uiMessage.isFocus()) {
-    if (key=='u' || keyCode==85) {
+    // this a trick to avoid having to check uppercase/lowercase letters
+    char k=(char)(key | 0x20);
+    if (k=='u' || keyCode==85) {
       doUpdate=!doUpdate;
     }
-    if (key=='x') {
+    if (k=='x') {
       rebuildMeshes();
     }
-    if (key=='r') {
+    if (k=='r') {
       toggleCamAutoRotation();
     }
-    if (key=='l') {
+    if (k=='l') {
       doUseLights=!doUseLights;
     }
-    if (key=='n' && shader.isSupportedVS) {
+    if (k=='n' && shader.isSupportedVS) {
       toggleNormals();
     }
-    if (key=='c') {
+    if (k=='c') {
       doUseGlobalCursor=!doUseGlobalCursor;
+    }
+    if (k=='h') {
+      doShowUsage=!doShowUsage;
     }
     if (key=='-') {
       cam.targetZoom=max(cam.targetZoom-0.1,0.3);
@@ -52,7 +57,7 @@ void keyPressed() {
       cam.targetZoom=min(cam.targetZoom+0.1,4);
     }
     if (!online) {
-      if (key=='t') {
+      if (k=='t') {
         saveTiles();
       }
       if (key==' ') {
@@ -61,7 +66,7 @@ void keyPressed() {
     }
     if (key>='1' && key<'1'+cameraPresets.size()) {
       setCameraPreset(key-'1');
-    } 
+    }
   }
 }
 
@@ -89,3 +94,4 @@ void mouseDragged() {
 void mouseReleased() {
   arcBall.mouseReleased();
 }
+

@@ -75,6 +75,11 @@ void initGUI() {
   Bang b;
   Radio r;
 
+  // present tab
+  
+  t=ui.addToggle("doShowUsage",doShowUsage,uix,uiy,14,14);
+  t.setLabel("help on/off");
+  
   // main tab
 
   uiMessage = ui.addTextfield("setSeedMessage",uix,uiy,100,20);
@@ -248,7 +253,7 @@ void initGUI() {
   ///////////// export tab
 
   if (!online) {
-    s=ui.addSlider("setNumExportTiles",1,20,numExportTiles,uix+100,uiy,100,14);
+    s=ui.addSlider("setNumExportTiles",1,12,numExportTiles,uix+100,uiy,100,14);
     s.setLabel("number of tiles");
     s.setTab(tabExport);
 
@@ -364,6 +369,7 @@ public void toggleCamAutoRotation() {
 }
 
 public void rebuildMeshes() {
+  doUpdate=true;
   for(Iterator i=meshes.iterator(); i.hasNext();) {
     DecodeMesh mesh=(DecodeMesh)i.next();
     mesh.restart();

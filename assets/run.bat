@@ -1,2 +1,1 @@
-@echo off
 java -Xms150m -Xmx640m -cp lib\DecodeIdent.jar;lib\colorutils.jar;lib\controlP5.jar;lib\core.jar;lib\glgraphics.jar;lib\gluegen-rt.jar;lib\jogl.jar;lib\opengl.jar;lib\toxiclibscore.jar;lib\volumeutils.jar -Djava.library.path=lib DecodeIdent

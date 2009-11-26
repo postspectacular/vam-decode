@@ -34,7 +34,6 @@ import toxi.geom.*;
 import toxi.geom.util.*;
 
 import controlP5.*;
-//import codeanticode.glgraphics.*;
 
 // type & variable declarations
 
@@ -83,6 +82,7 @@ public boolean doUseLights=true;
 public boolean doUseGlobalCursor=false;
 public boolean doUpdateNormals=true;
 public boolean doShowGradient=true;
+public boolean doShowUsage=true;
 
 public boolean isShiftDown=false;
 public boolean isControlDown = false;
@@ -96,6 +96,7 @@ public float bgGradientAlpha=1;
 public float targetGradAlpha=1;
 
 public Comparator meshComparator=new FaceDistanceComparator(new Vec3D(),meshFuzziness);
+public String[] usage;
 
 // initialization method
 // loads config file, creates window and initializes all app components
@@ -236,19 +237,19 @@ void showInfo() {
     textFont(seed.font);
     textSize(12);
     textAlign(LEFT);
-    int numLines=config.getInt("app.info.count",0);
-    int leading=16;
-    int x=20;
-    int y=height-numLines*leading;
-    for(int i=0; i<numLines; i++) {
-      String l=config.getProperty("app.info"+i,"");
-      if (l.length()>0) {
-        fill(0,128);
-        rect(0,y-leading,textWidth(l)+x+10,leading);
-        fill(255);
-        text(l,x,y-4);
+    if (doShowUsage) {
+      int leading=16;
+      int x=20;
+      int y=height-usage.length*leading;
+      for(int i=0; i<usage.length; i++) {
+        if (usage[i].length()>0) {
+          fill(0,160);
+          rect(0,y-leading,textWidth(usage[i])+x+10,leading);
+          fill(255);
+          text(usage[i],x,y-4);
+        }
+        y+=leading;
       }
-      y+=leading;
     }
   }
 }
@@ -297,6 +298,8 @@ void initConfig() {
     }
     bgColor=TColor.newHex(config.getProperty("app.bgcolor","000000"));
     targetBgColor=bgColor.copy();
+    doShowUsage=config.getBoolean("app.usage.enabled",doShowUsage);
+    usage=loadStrings(sketchPath(config.getProperty("app.usage.file")));
   }
   catch(IOException e) {
   }
@@ -401,11 +404,11 @@ void initCameraPresets() {
   for(int i=0; i<numPresets; i++) {
     String baseProp="cam.preset"+i+".";
     float[] q=config.getFloatArray(baseProp+"quat", new float[] {
-      1, 0, 0, 0     }
+      1, 0, 0, 0             }
     );
     Quaternion orient=new Quaternion(q[0], q[1], q[2], q[3]);
     float[] p=config.getFloatArray(baseProp+"pos", new float[] { 
-      0, 0, 0     }
+      0, 0, 0             }
     );
     Vec3D pos=new Vec3D(p[0], p[1], p[2]);
     TColor bg=null;
@@ -416,4 +419,5 @@ void initCameraPresets() {
     cameraPresets.add(new CameraPreset(orient, pos, config.getFloat(baseProp+"zoom", 1), bg, 1));
   }
 }
+
 
