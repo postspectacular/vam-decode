@@ -10,7 +10,7 @@
  * by Karsten Schmidt.
  */
 
-varying vec3  reflect;
+varying vec3  reflectVec;
 varying vec3  refractR;
 varying vec3  refractG;
 varying vec3  refractB;
@@ -26,7 +26,7 @@ void main() {
     refractColor.r = vec3(textureCube(cubemap, refractR)).r;
     refractColor.g = vec3(textureCube(cubemap, refractG)).g;
     refractColor.b = vec3(textureCube(cubemap, refractB)).b;
-    reflectColor   = vec3(textureCube(cubemap, reflect));
+    reflectColor   = vec3(textureCube(cubemap, reflectVec));
     
     reflectColor   = mix(refractColor, reflectColor, ratio);
     

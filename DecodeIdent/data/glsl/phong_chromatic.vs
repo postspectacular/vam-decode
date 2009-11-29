@@ -17,7 +17,7 @@ uniform float etaG;
 uniform float etaB;
 uniform float fresnelPower;
 
-varying vec3  reflect;
+varying vec3  reflectVec;
 varying vec3  refractR;
 varying vec3  refractG;
 varying vec3  refractB;
@@ -43,8 +43,8 @@ void main() {
     refractB = refract(i, n, etaB);
     refractB = vec3(gl_TextureMatrix[0] * vec4(refractB, 1.0));
 
-    reflect  = reflect(i, n);
-    reflect  = vec3(gl_TextureMatrix[0] * vec4(reflect, 1.0));
+    reflectVec  = reflect(i, n);
+    reflectVec  = vec3(gl_TextureMatrix[0] * vec4(reflectVec, 1.0));
 
     normal = gl_NormalMatrix * gl_Normal;
 
@@ -55,3 +55,4 @@ void main() {
     
     gl_Position = ftransform();
 }
+
