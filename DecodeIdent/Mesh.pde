@@ -48,7 +48,7 @@ class DecodeMesh {
     // recompute the contour surface based on config settings
     surface.reset();
     surface.computeSurfaceMesh(mesh, layerConfig.isoValue);
-    surface.computeSurfaceMesh(mesh, layerConfig.isoValue);
+    //surface.computeSurfaceMesh(mesh, layerConfig.isoValue);
     // compute smoothened surface normal vectors
     mesh.computeVertexNormals();
     // now wrap all mesh vertices in a DecodeVertex instance
@@ -88,15 +88,15 @@ class DecodeMesh {
   void resetNormals() {
     for(int i=0,j=0; i<faces.length; i++,j+=12) {
       DecodeFace f=faces[i];
-      vboNormals[j]=-f.va.v.normal.x;
-      vboNormals[j+1]=-f.va.v.normal.y;
-      vboNormals[j+2]=-f.va.v.normal.z;
-      vboNormals[j+4]=-f.vb.v.normal.x;
-      vboNormals[j+5]=-f.vb.v.normal.y;
-      vboNormals[j+6]=-f.vb.v.normal.z;
-      vboNormals[j+8]=-f.vc.v.normal.x;
-      vboNormals[j+9]=-f.vc.v.normal.y;
-      vboNormals[j+10]=-f.vc.v.normal.z;
+      vboNormals[j]=f.va.v.normal.x;
+      vboNormals[j+1]=f.va.v.normal.y;
+      vboNormals[j+2]=f.va.v.normal.z;
+      vboNormals[j+4]=f.vb.v.normal.x;
+      vboNormals[j+5]=f.vb.v.normal.y;
+      vboNormals[j+6]=f.vb.v.normal.z;
+      vboNormals[j+8]=f.vc.v.normal.x;
+      vboNormals[j+9]=f.vc.v.normal.y;
+      vboNormals[j+10]=f.vc.v.normal.z;
     }
     vbo.updateNormals(vboNormals);
   }
@@ -153,7 +153,7 @@ class DecodeMesh {
         for(int i=0,j=0; i<currFaceCount; i++,j+=12) {
           DecodeFace f=faces[i];
           if (shader.isSupportedVS) {
-            n.set(f.a.sub(f.b).crossSelf(f.a.sub(f.c))).normalize();
+            n.set(f.a.sub(f.c).crossSelf(f.a.sub(f.b))).normalize();
           } 
           else {
             n.set(f.a.sub(f.c).crossSelf(f.a.sub(f.b))).normalize(); 

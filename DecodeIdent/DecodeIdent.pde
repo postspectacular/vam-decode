@@ -31,7 +31,7 @@ import toxi.math.*;
 import toxi.math.waves.*;
 import toxi.math.conversion.*;
 import toxi.geom.*;
-import toxi.geom.util.*;
+import toxi.geom.mesh.*;
 
 import controlP5.*;
 

@@ -33,7 +33,7 @@ class ArcBall {
   protected Vec2D center;
   protected Vec3D downPos, dragPos;
   protected Quaternion currOrientation, downOrientation, dragOrientation, targetOrientation;
-  protected Vec3D[] axisSet;
+  protected ReadonlyVec3D[] axisSet;
   protected float radius;
   protected int constrainedAxisID;
 
@@ -57,7 +57,7 @@ class ArcBall {
 
     reset();
 
-    axisSet = new Vec3D[] { 
+    axisSet = new ReadonlyVec3D[] { 
       Vec3D.X_AXIS, Vec3D.Y_AXIS, Vec3D.Z_AXIS             };
     constrainedAxisID = -1;
   }
@@ -79,7 +79,7 @@ class ArcBall {
     app.rotate(aa[0], aa[1], aa[2], aa[3]);
   }
 
-  public Vec3D constrainVector(Vec3D v, Vec3D axis) {
+  public Vec3D constrainVector(Vec3D v, ReadonlyVec3D axis) {
     Vec3D res = v.sub(axis.scale(axis.dot(v)));
     return res.normalize();
   }
