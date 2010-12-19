@@ -1,0 +1,24 @@
+This application is fully interactive and can be controlled via
+mouse, keyboard and the graphical user interface controllers above
+to tweak various parameters of the identity.
+
+Shift + drag to rotate camera view 
+Right click & drag to reposition explode cursor
+
+Keyboard shortcuts
+U : turn mesh animation on/off
+X : Rebuild meshes
+L : Lighting on/off
+N : Updating reflection vectors on/off
+C : Manual explode cursor on/off
+T : Export current frame as high resolution asset 
+H : Show/hide this information
+Space : Start/Stop recording of image sequence 
+1 - 9 : Trigger camera preset
+- / + : adjust camera zoom 
+Esc : quit application
+
+To create and export your own artwork and get a chance to have
+your work shown on digital screens throughout London Underground,
+download the full application & user guide from the project website at:
+http://decode.googlecode.com
