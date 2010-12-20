@@ -251,7 +251,7 @@ void showInfo() {
         y+=leading;
       }
     }
-    image(seedImg,0,400);
+    //image(seedImg,0,400);
   }
 }
 
@@ -300,7 +300,8 @@ void initConfig() {
     bgColor=TColor.newHex(config.getProperty("app.bgcolor","000000"));
     targetBgColor=bgColor.copy();
     doShowUsage=config.getBoolean("app.usage.enabled",doShowUsage);
-    usage=loadStrings(sketchPath(config.getProperty("app.usage.file")));
+    byte[] ubytes=loadBytes(sketchPath(config.getProperty("app.usage.file")));
+    usage=split(new String(ubytes,"UTF-8"),"\n");
   }
   catch(IOException e) {
   }

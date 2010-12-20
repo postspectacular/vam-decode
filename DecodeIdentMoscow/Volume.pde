@@ -21,7 +21,7 @@
 // an offscreen image buffer which is then used to create a volumetric
 // version of the word (see below)
 PImage createVolumeSeedImage(SeedConfiguration seed) {
-  int w=config.getInt("volume.seed.img.width",192);
+  int w=config.getInt("volume.seed.img.width",256);
   int h=config.getInt("volume.seed.img.height",64);
   seedImg=createGraphics(w,h,JAVA2D);
   seedImg.beginDraw();
@@ -49,10 +49,10 @@ PImage createVolumeSeedImage(SeedConfiguration seed) {
 
 void initVolume(SeedConfiguration seed) {
   PImage seedImg=createVolumeSeedImage(seed);
-  int resX=config.getInt("volume.resolution.x",120);
+  int resX=config.getInt("volume.resolution.x",60);
   int resY=config.getInt("volume.resolution.y",60);
   int resZ=config.getInt("volume.resolution.z",60);
-  float sX=config.getFloat("volume.scale.x",576);
+  float sX=config.getFloat("volume.scale.x",768);
   float sY=config.getFloat("volume.scale.y",384);
   float sZ=config.getFloat("volume.scale.z",384);
   float brushSize=config.getFloat("volume.brush.size",0.052);

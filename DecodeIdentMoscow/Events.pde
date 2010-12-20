@@ -19,7 +19,18 @@
 
 // this file only contains the various keyboard & mouse event listeners
 
-void keyPressed() {
+public void keyTyped() {
+  if(keyCode==ESC || key == ESC) { 
+    key = 0; 
+    keyCode = 0;
+  }
+}
+
+public void keyPressed() {
+  if(keyCode==ESC || key == ESC) { 
+    key = 0; 
+    keyCode = 0;
+  }
   if (keyCode == SHIFT) {
     isShiftDown = true;
   }

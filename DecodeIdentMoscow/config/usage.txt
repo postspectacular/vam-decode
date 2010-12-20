@@ -1,24 +1,23 @@
-This application is fully interactive and can be controlled via
-mouse, keyboard and the graphical user interface controllers above
-to tweak various parameters of the identity.
+Данное приложение полностью интерактивно. Изменение различных
+параметров личности осуществляется как мышью и клавиатурой,
+так и посредством графического интерфейса.
+ 
+Чтобы изменить угол обзора, переместите курсор, удерживая клавишу «Shift».
+Нажмите и удерживайте правую кнопку мыши при движении,
+чтобы переместить курсор-бомбу.
+  
+Команды клавиатуры:
+ 
+U : Включить / выключить грид
+X : Пересчитать грид
+L : Включить / выключить источники света
+N : Включить / выключить обновление векторов отражения
+C : Включить / выключить ручное управление курсором-бомбой
+T : Выгрузить фрейм в высоком разрешении
+H : Включить / выключить информационную панель
+Пробел: Начать / остановить запись анимации
+1 - 9 : Активировать ранее сохранённые параметры камеры
+- / + : Удаление / приближение
 
-Shift + drag to rotate camera view 
-Right click & drag to reposition explode cursor
-
-Keyboard shortcuts
-U : turn mesh animation on/off
-X : Rebuild meshes
-L : Lighting on/off
-N : Updating reflection vectors on/off
-C : Manual explode cursor on/off
-T : Export current frame as high resolution asset 
-H : Show/hide this information
-Space : Start/Stop recording of image sequence 
-1 - 9 : Trigger camera preset
-- / + : adjust camera zoom 
-Esc : quit application
-
-To create and export your own artwork and get a chance to have
-your work shown on digital screens throughout London Underground,
-download the full application & user guide from the project website at:
+Для этого скачайте полное приложение и инструкции на сайте проекта:
 http://decode.googlecode.com

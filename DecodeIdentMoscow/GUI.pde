@@ -18,7 +18,7 @@
  */
 
 public ControlP5 ui;
-public Textfield uiMessage;
+public MaxLenTextfield uiMessage;
 
 public Textlabel uiLabelNumTiles;
 public Textlabel uiLabelTimecode;
@@ -45,7 +45,7 @@ void initGUI() {
   ui.getTab("default").setLabel("present");
   ControlFont uiFont = new ControlFont(createFont("fonts/"+config.getProperty("volume.seed.font","Arial.ttf"),10,true));
   int uiFontSize=12;
-  
+
   // border width & height
   int uix=20;
   int uiy=40;
@@ -78,13 +78,13 @@ void initGUI() {
   Radio r;
 
   // present tab
-  
+
   t=ui.addToggle("doShowUsage",doShowUsage,uix,uiy,14,14);
   t.setLabel("help on/off");
-  
-  // main tab
 
-  uiMessage = ui.addTextfield("setSeedMessage",uix,uiy,100,20);
+  // main tab
+  uiMessage = new MaxLenTextfield(ui, (Tab)ui.controlWindow.tabs().get(1), "setSeedMessage", "", uix, uiy, 100, 20);
+  //uiMessage = ui.addTextfield("setSeedMessage",uix,uiy,100,20);
   uiMessage.setLabel("logo / message");
   uiMessage.setBroadcast(false);
   uiMessage.setValue(seed.message);
@@ -92,6 +92,7 @@ void initGUI() {
   uiMessage.setTab(tabMain);
   uiMessage.valueLabel().setControlFont(uiFont);
   uiMessage.valueLabel().setControlFontSize(uiFontSize);
+  ui.register(uiMessage);
   
   s=ui.addSlider("setBGRed",0,1.0,bgColor.red(),uix+200,uiy,100,14);
   s.setLabel("red");
@@ -312,6 +313,7 @@ public void updateUIColors() {
 // the volumetric space and all meshes
 
 public void setSeedMessage(String txt) {
+  println("txt: "+txt);
   if (txt.length()>0) {
     seed.setMessage(txt);
     initVolume(seed);
@@ -517,5 +519,38 @@ public void resetArcBall() {
 
 public void setCursorDamping(float d) {
   explodeCursor.damping=d;
+}
+
+public class MaxLenTextfield extends Textfield {
+
+  protected int maxLen=10;
+
+  public MaxLenTextfield(
+  ControlP5 cp5,
+  ControllerGroup p,
+  String name,
+  String def,
+  int x,
+  int y,
+  int w,
+  int h) {
+    super(cp5,p,name,def,x,y,w,h);
+  }
+
+  public void keyEvent(KeyEvent e) {
+    if (e.getID() == KeyEvent.KEY_PRESSED) {
+      if (getText().length()>=maxLen) {
+        if (e.getKeyChar() > 31 && e.getKeyChar() < 127) {
+          return;
+        }
+      }
+      if (e.getKeyCode()==KeyEvent.VK_ENTER ) {
+        println("submit");
+        submit();
+      }
+    }
+    println(e);
+    super.keyEvent(e);
+  }
 }
 
