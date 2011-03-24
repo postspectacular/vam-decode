@@ -3,6 +3,9 @@
  * 
  * Copyright 2009 Karsten Schmidt (PostSpectacular Ltd.)
  * 
+ * Project website:  http://decode.googlecode.com/
+ * Author website:   http://postspectacular.com/
+ *
  * DecodeIdent is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -57,8 +60,8 @@ void initVolume(SeedConfiguration seed) {
   float sZ=config.getFloat("volume.scale.z",384);
   float brushSize=config.getFloat("volume.brush.size",0.052);
   Vec3D volumeScale=new Vec3D(sX, sY, sZ);
-  volume=new VolumetricSpace(volumeScale, resX, resY, resZ);
-  surface = new IsoSurface(volume);
+  volume=new VolumetricSpaceArray(volumeScale, resX, resY, resZ);
+  surface = new ArrayIsoSurface(volume);
   brush = new RoundBrush(volume, 0);
   float imgScaleX = (float)resX / seedImg.width;
   for (int x = 0; x < seedImg.width; x += 2) {

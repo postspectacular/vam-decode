@@ -3,6 +3,9 @@
  * 
  * Copyright 2009 Karsten Schmidt (PostSpectacular Ltd.)
  * 
+ * Project website:  http://decode.googlecode.com/
+ * Author website:   http://postspectacular.com/
+ *
  * DecodeIdent is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -54,14 +57,14 @@ class DecodeMesh {
     // now wrap all mesh vertices in a DecodeVertex instance
     vertices=new DecodeVertex[mesh.vertices.size()];
     for(Iterator i=mesh.vertices.values().iterator(); i.hasNext();) {
-      TriangleMesh.Vertex v=(TriangleMesh.Vertex)i.next();
+      Vertex v=(Vertex)i.next();
       vertices[v.id]=new DecodeVertex(v);
     }
     // do the same for faces using DecodeFace instances
     faces=new DecodeFace[mesh.faces.size()];
     int idx=0;
     for(Iterator i=mesh.faces.iterator(); i.hasNext();) {
-      TriangleMesh.Face f=(TriangleMesh.Face)i.next();
+      Face f=(Face)i.next();
       faces[idx++]=new DecodeFace(vertices[f.a.id],vertices[f.b.id],vertices[f.c.id]);
     }
     // create vertex buffer object for this mesh
@@ -198,10 +201,10 @@ class DecodeMesh {
  * with a modulation wave used to create extrusion effects
  */
 class DecodeVertex extends Vec3D {
-  TriangleMesh.Vertex v;
+  Vertex v;
   AbstractWave distortion;
 
-  DecodeVertex(TriangleMesh.Vertex v) {
+  DecodeVertex(Vertex v) {
     super(v);
     this.v=v;
     float amp=random(1)<0.18 ? random(random(1)<0.8 ? 0.75 : 1.5) : 
